@@ -9,7 +9,7 @@ export type Game = {
 
 export type Games = Game[];
 
-export type History = { playerId: string; point: number; skipped?: boolean };
+export type History = { playerIndex: number; point: number; skipped?: boolean };
 
 export type Histories = History[];
 

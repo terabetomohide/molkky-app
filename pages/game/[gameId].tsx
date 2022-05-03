@@ -6,6 +6,9 @@ import Playing from "components/Playing";
 import Finished from "components/Finished";
 import AddPoints from "components/AddPoints";
 
+const maxPoint = 50;
+const reducedPoint = 25;
+
 export default function GameComponent() {
   const router = useRouter();
   const { gameId } = router.query;
@@ -21,6 +24,14 @@ export default function GameComponent() {
       history: [],
     });
   }, [gameId]);
+
+  useEffect(() => {
+    // 変わるたびに保存する
+    // 50を超えた時
+    // 0が3回続いた時
+    // stateを変える
+    console.log(game?.history);
+  }, [game]);
 
   if (!game) {
     // 保存データ読み出し中
@@ -73,16 +84,23 @@ export default function GameComponent() {
           <div>
             <AddPoints
               onAddPoints={(point) => {
-                const arr = [...game.players];
-                let currentPlayer = { ...arr[currentPlayerIndex] };
+                const currentPlayers = [...game.players];
+                const currentHistory = [...game.history];
+                let currentPlayer = { ...currentPlayers[currentPlayerIndex] };
+                let newPoint = currentPlayer.point + point;
+                if (newPoint > maxPoint) {
+                  newPoint = reducedPoint;
+                }
+                currentHistory.push({ playerIndex: currentPlayerIndex, point });
                 currentPlayer = {
                   ...currentPlayer,
-                  point: currentPlayer.point + point,
+                  point: newPoint,
                 };
-                arr.splice(currentPlayerIndex, 1, currentPlayer);
+                currentPlayers.splice(currentPlayerIndex, 1, currentPlayer);
                 setGame({
                   ...game,
-                  players: arr,
+                  players: currentPlayers,
+                  history: currentHistory,
                 });
 
                 const length = players.length;
