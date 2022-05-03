@@ -1,13 +1,11 @@
+import { useRouter } from "next/router";
 import Head from "next/head";
 import Header from "components/Header";
 import Footer from "components/Footer";
-import { useRouter } from "next/router";
 import Link from "next/link";
-import { v4 as uuidv4 } from "uuid";
+import { token } from "utils/token";
 
 export default function Home() {
-  const router = useRouter();
-
   return (
     <div className="container">
       <Head>
@@ -18,7 +16,7 @@ export default function Home() {
         <Header title="Welcome to my app!" />
         <ul>
           <li>
-            <Link href={`/game/${uuidv4()}`}>
+            <Link href={`/game/${token()}`}>
               <a>new game</a>
             </Link>
           </li>

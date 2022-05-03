@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { v4 as uuidv4 } from "uuid";
+import { token } from "utils/token";
+
 import { Players, Player } from "types";
 
 export default function Before({
@@ -12,7 +13,6 @@ export default function Before({
   onRemove: (id: string) => void;
 }) {
   const [player, setPlayer] = useState<Player | undefined>();
-
   return (
     <div>
       <ul>
@@ -60,7 +60,7 @@ export default function Before({
               <button
                 onClick={() =>
                   setPlayer({
-                    id: uuidv4(),
+                    id: token(),
                     name: "",
                     point: 0,
                   })

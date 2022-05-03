@@ -1,6 +1,8 @@
 import { useRouter } from "next/router";
-import { Game } from "types";
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { Game } from "types";
+import { sortBy } from "lodash";
 import Before from "components/Before";
 import Playing from "components/Playing";
 import Finished from "components/Finished";
@@ -16,7 +18,7 @@ export default function GameComponent() {
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState<number>(0);
 
   useEffect(() => {
-    //保存データになければ
+    //保存データになければ初期値をセット
     setGame({
       id: String(gameId),
       state: "before",
@@ -30,19 +32,16 @@ export default function GameComponent() {
     // 変わるたびに保存する
     // 0が3回続いた時
     // stateを変える
-
     console.log(game?.history);
   }, [game?.history]);
 
   useEffect(() => {
     if (!game?.players) return;
-    // 変わるたびに保存する
-    // 50を超えた時
-    // stateを変える
-
-    const winner = game.players.find((player) => player.point === 50);
-    if (winner) {
-      setGame({ ...game, state: "finished" });
+    if (game?.state === "playing") {
+      const winner = game.players.find((player) => player.point === 50);
+      if (winner) {
+        setGame({ ...game, state: "finished" });
+      }
     }
   }, [game?.players]);
 
@@ -88,6 +87,9 @@ export default function GameComponent() {
           >
             start game
           </button>
+          <Link href={"/"}>
+            <a>home</a>
+          </Link>
         </div>
       );
     case "playing":
@@ -123,9 +125,32 @@ export default function GameComponent() {
               }}
             />
           </div>
+          <Link href={"/"}>
+            <a>home</a>
+          </Link>
         </div>
       );
     case "finished":
-      return <Finished players={players} />;
+      return (
+        <div>
+          <Finished players={players} />
+          <button
+            onClick={() => {
+              setGame({
+                ...game,
+                state: "before",
+                players: sortBy([...game.players].reverse(), "points"),
+                history: [],
+              });
+              // バックアップを取る
+            }}
+          >
+            next game
+          </button>
+          <Link href={"/"}>
+            <a>home</a>
+          </Link>
+        </div>
+      );
   }
 }
