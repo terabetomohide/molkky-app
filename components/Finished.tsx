@@ -7,8 +7,9 @@ export default function Finished({ players }: { players: Players }) {
         {!!players.length &&
           players.map(({ name, id, point }: Player, index) => (
             <li key={id}>
-              <span>{name}</span>
-              <span>{point}</span>
+              <span>name:{name}</span>
+              <span>point:{point}</span>
+              {point === 50 && <span>[winner]</span>}
             </li>
           ))}
       </ul>

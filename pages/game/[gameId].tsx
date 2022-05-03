@@ -26,12 +26,25 @@ export default function GameComponent() {
   }, [gameId]);
 
   useEffect(() => {
+    if (!game?.history) return;
     // 変わるたびに保存する
-    // 50を超えた時
     // 0が3回続いた時
     // stateを変える
+
     console.log(game?.history);
-  }, [game]);
+  }, [game?.history]);
+
+  useEffect(() => {
+    if (!game?.players) return;
+    // 変わるたびに保存する
+    // 50を超えた時
+    // stateを変える
+
+    const winner = game.players.find((player) => player.point === 50);
+    if (winner) {
+      setGame({ ...game, state: "finished" });
+    }
+  }, [game?.players]);
 
   if (!game) {
     // 保存データ読み出し中
