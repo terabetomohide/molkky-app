@@ -1,17 +1,15 @@
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { Players, Player, GameState } from "types";
+import { Players, Player } from "types";
 
-export default function PlayerList({
+export default function Before({
   players,
-  gameState,
   onCreate,
   onRemove,
 }: {
   players: Players;
-  onCreate?: (player: Player) => void;
-  onRemove?: (id: string) => void;
-  gameState: GameState;
+  onCreate: (player: Player) => void;
+  onRemove: (id: string) => void;
 }) {
   const [player, setPlayer] = useState<Player | undefined>();
 
@@ -19,18 +17,13 @@ export default function PlayerList({
     <div>
       <ul>
         {!!players.length &&
-          players.map(({ name, id, point }: Player) => (
+          players.map(({ name, id, point }: Player, index) => (
             <li key={id}>
-              {gameState === "before" && (
-                <button onClick={onRemove ? () => onRemove(id) : undefined}>
-                  x
-                </button>
-              )}
+              <button onClick={() => onRemove(id)}>x</button>
               <span>{name}</span>
-              {gameState !== "before" && <span>{point}</span>}
             </li>
           ))}
-        {gameState === "before" && (
+        {
           <li>
             {player ? (
               <>
@@ -55,14 +48,10 @@ export default function PlayerList({
                     !player.name ||
                     !!players.find(({ name }) => name === player.name)
                   }
-                  onClick={
-                    onCreate
-                      ? () => {
-                          onCreate(player);
-                          setPlayer(undefined);
-                        }
-                      : undefined
-                  }
+                  onClick={() => {
+                    onCreate(player);
+                    setPlayer(undefined);
+                  }}
                 >
                   追加
                 </button>
@@ -81,7 +70,7 @@ export default function PlayerList({
               </button>
             )}
           </li>
-        )}
+        }
       </ul>
     </div>
   );

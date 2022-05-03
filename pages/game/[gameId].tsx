@@ -1,12 +1,16 @@
 import { useRouter } from "next/router";
 import { Game } from "types";
 import { useEffect, useState } from "react";
-import PlayerList from "components/PlayerList";
+import Before from "components/Before";
+import Playing from "components/Playing";
+import Finished from "components/Finished";
+import AddPoints from "components/AddPoints";
 
 export default function GameComponent() {
   const router = useRouter();
   const { gameId } = router.query;
   const [game, setGame] = useState<Game>();
+  const [currentPlayerIndex, setCurrentPlayerIndex] = useState<number>(0);
 
   useEffect(() => {
     //保存データになければ
@@ -29,7 +33,7 @@ export default function GameComponent() {
     case "before":
       return (
         <div>
-          <PlayerList
+          <Before
             onCreate={(player) => {
               setGame({
                 ...game,
@@ -37,16 +41,17 @@ export default function GameComponent() {
               });
             }}
             onRemove={(removeId) => {
-              const players = game.players;
-              const index = players.findIndex(({ id }) => id === removeId);
-              players.splice(index, 1);
+              const currentPlayers = [...game.players];
+              const index = currentPlayers.findIndex(
+                ({ id }) => id === removeId
+              );
+              currentPlayers.splice(index, 1);
               setGame({
                 ...game,
-                players,
+                players: currentPlayers,
               });
             }}
             players={players}
-            gameState={state}
           />
           <button
             disabled={!game.players.length}
@@ -62,8 +67,34 @@ export default function GameComponent() {
         </div>
       );
     case "playing":
-      return <PlayerList players={players} gameState={state} />;
+      return (
+        <div>
+          <Playing players={players} currentPlayerIndex={currentPlayerIndex} />
+          <div>
+            <AddPoints
+              onAddPoints={(point) => {
+                const arr = [...game.players];
+                let currentPlayer = { ...arr[currentPlayerIndex] };
+                currentPlayer = {
+                  ...currentPlayer,
+                  point: currentPlayer.point + point,
+                };
+                arr.splice(currentPlayerIndex, 1, currentPlayer);
+                setGame({
+                  ...game,
+                  players: arr,
+                });
+
+                const length = players.length;
+                setCurrentPlayerIndex((prev) =>
+                  prev + 1 === length ? 0 : prev + 1
+                );
+              }}
+            />
+          </div>
+        </div>
+      );
     case "finished":
-      return <PlayerList players={players} gameState={state} />;
+      return <Finished players={players} />;
   }
 }
