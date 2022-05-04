@@ -69,6 +69,12 @@ export default function GameComponent() {
       return (
         <div>
           <Before
+            onChange={(players) => {
+              setGame({
+                ...game,
+                players,
+              });
+            }}
             onCreate={(player) => {
               setGame({
                 ...game,

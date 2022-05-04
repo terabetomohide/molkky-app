@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { List as MovableList, arrayMove } from "react-movable";
 import { token } from "utils/token";
 
 import { Players, Player } from "types";
@@ -7,23 +8,47 @@ export default function Before({
   players,
   onCreate,
   onRemove,
+  onChange,
 }: {
   players: Players;
   onCreate: (player: Player) => void;
+  onChange: (players: Players) => void;
   onRemove: (id: string) => void;
 }) {
   const [player, setPlayer] = useState<Player | undefined>();
   return (
-    <div>
-      <ul>
-        {!!players.length &&
-          players.map(({ name, id, point }: Player, index) => (
-            <li key={id}>
-              <button onClick={() => onRemove(id)}>x</button>
-              <span>{name}</span>
+    <>
+      <MovableList
+        values={players}
+        onChange={({ oldIndex, newIndex }) => {
+          let newPlayers: Players = [...players];
+          newPlayers.splice(oldIndex, 1);
+          newPlayers.splice(newIndex, 0, players[oldIndex]);
+          onChange(newPlayers);
+        }}
+        renderList={({ children, props }) => <ul {...props}>{children}</ul>}
+        renderItem={({ value, props }) => {
+          const { id, name } = value;
+          return (
+            <li {...props}>
+              <div>
+                <span
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                  }}
+                >
+                  =
+                </span>
+                <span>{name}</span>
+                <button onClick={() => onRemove(id)}>x</button>
+              </div>
             </li>
-          ))}
-        {
+          );
+        }}
+      />
+      <div>
+        <ul>
           <li>
             {player ? (
               <>
@@ -71,8 +96,8 @@ export default function Before({
               </button>
             )}
           </li>
-        }
-      </ul>
-    </div>
+        </ul>
+      </div>
+    </>
   );
 }
