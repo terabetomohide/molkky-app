@@ -10,6 +10,7 @@ import AddPoints from "components/AddPoints";
 
 const maxPoint = 50;
 const reducedPoint = 25;
+const maxFails = 3;
 
 export default function GameComponent() {
   const router = useRouter();
@@ -35,22 +36,26 @@ export default function GameComponent() {
     console.log(game?.history);
   }, [game?.history]);
 
-  useEffect(() => {
-    if (!game?.players) return;
     if (game?.state === "playing") {
-      const winner = game.players.find((player) => player.point === 50);
+      const winner = game.players.find((player) => player.point === maxPoint);
       if (winner) {
         setGame({ ...game, state: "finished" });
       }
+      const fail = game.players.find((player) => player.fails === maxFails);
+      if (fail) {
+        setGame({ ...game, state: "finished" });
+      }
     }
-  }, [game?.players]);
+  }, [game?.histories]);
+
+  useEffect(() => {}, [game?.players]);
 
   if (!game) {
     // 保存データ読み出し中
     return null;
   }
 
-  const { players, state } = game;
+  const { players, state, histories } = game;
 
   switch (state) {
     case "before":
@@ -95,27 +100,41 @@ export default function GameComponent() {
     case "playing":
       return (
         <div>
-          <Playing players={players} currentPlayerIndex={currentPlayerIndex} />
+          <Playing
+            players={players}
+            currentPlayerIndex={currentPlayerIndex}
+            histories={histories}
+          />
           <div>
             <AddPoints
               onAddPoints={(point) => {
                 const currentPlayers = [...game.players];
-                const currentHistory = [...game.history];
+                const currentHistory = [...game.histories];
+                currentHistory.push({ playerIndex: currentPlayerIndex, point });
                 let currentPlayer = { ...currentPlayers[currentPlayerIndex] };
+
+                // 0が続いてもpointが入ればfailsはリセットされる
+                let fails = point ? 0 : Number(currentPlayer.fails) + 1;
+
                 let newPoint = currentPlayer.point + point;
+
                 if (newPoint > maxPoint) {
                   newPoint = reducedPoint;
                 }
-                currentHistory.push({ playerIndex: currentPlayerIndex, point });
+                if (fails === maxFails) {
+                  newPoint = 0;
+                }
                 currentPlayer = {
                   ...currentPlayer,
                   point: newPoint,
+                  fails,
                 };
+
                 currentPlayers.splice(currentPlayerIndex, 1, currentPlayer);
                 setGame({
                   ...game,
                   players: currentPlayers,
-                  history: currentHistory,
+                  histories: currentHistory,
                 });
 
                 const length = players.length;
@@ -139,8 +158,14 @@ export default function GameComponent() {
               setGame({
                 ...game,
                 state: "before",
-                players: sortBy([...game.players].reverse(), "points"),
-                history: [],
+                players: sortBy([...game.players].reverse(), "points").map(
+                  (player) => ({
+                    ...player,
+                    point: 0,
+                    fails: 0,
+                  })
+                ),
+                histories: [],
               });
               // バックアップを取る
             }}

@@ -63,6 +63,7 @@ export default function Before({
                     id: token(),
                     name: "",
                     point: 0,
+                    fails: 0,
                   })
                 }
               >
