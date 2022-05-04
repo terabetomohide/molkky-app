@@ -1,12 +1,12 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { Game } from "types";
 import { sortBy } from "lodash";
 import Before from "components/Before";
 import Playing from "components/Playing";
 import Finished from "components/Finished";
 import AddPoints from "components/AddPoints";
+import Layout from "components/Layoout";
 import { getCurrentGame, setCurrentGame } from "utils/storage";
 import { token } from "utils/token";
 
@@ -137,61 +137,58 @@ export default function GameComponent() {
 
   const { players, state, histories } = game;
 
-  switch (state) {
-    case "before":
-      return (
-        <div>
-          <Before
-            onChange={(players) => {
-              setGame({
-                ...game,
-                players,
-              });
-            }}
-            onCreate={(player) => {
-              setGame({
-                ...game,
-                players: [...game.players, player],
-              });
-            }}
-            onRemove={(removeId) => {
-              const currentPlayers = [...game.players];
-              const index = currentPlayers.findIndex(
-                ({ id }) => id === removeId
-              );
-              currentPlayers.splice(index, 1);
-              setGame({
-                ...game,
-                players: currentPlayers,
-              });
-            }}
-            players={players}
-          />
-          <button
-            disabled={!game.players.length}
-            onClick={() => {
-              setGame({
-                ...game,
-                state: "playing",
-              });
-            }}
-          >
-            start game
-          </button>
-          <Link href={"/"}>
-            <a>home</a>
-          </Link>
-        </div>
-      );
-    case "playing":
-      return (
-        <div>
-          <Playing
-            players={players}
-            currentPlayerIndex={currentPlayerIndex}
-            histories={histories}
-          />
+  const content = () => {
+    switch (state) {
+      case "before":
+        return (
           <div>
+            <Before
+              onChange={(players) => {
+                setGame({
+                  ...game,
+                  players,
+                });
+              }}
+              onCreate={(player) => {
+                setGame({
+                  ...game,
+                  players: [...game.players, player],
+                });
+              }}
+              onRemove={(removeId) => {
+                const currentPlayers = [...game.players];
+                const index = currentPlayers.findIndex(
+                  ({ id }) => id === removeId
+                );
+                currentPlayers.splice(index, 1);
+                setGame({
+                  ...game,
+                  players: currentPlayers,
+                });
+              }}
+              players={players}
+            />
+            <button
+              disabled={!game.players.length}
+              onClick={() => {
+                setGame({
+                  ...game,
+                  state: "playing",
+                });
+              }}
+            >
+              start game
+            </button>
+          </div>
+        );
+      case "playing":
+        return (
+          <div>
+            <Playing
+              players={players}
+              currentPlayerIndex={currentPlayerIndex}
+              histories={histories}
+            />
             <AddPoints
               onAddPoints={(point) => {
                 setGame(add(game, currentPlayerIndex, point));
@@ -211,39 +208,34 @@ export default function GameComponent() {
               }}
             />
           </div>
-          <Link href={"/"}>
-            <a>home</a>
-          </Link>
-        </div>
-      );
-    case "finished":
-      return (
-        <div>
-          <Finished players={players} />
-          <button
-            onClick={() => {
-              const newId = token();
-              setGame({
-                ...game,
-                id: newId,
-                state: "before",
-                players: sortBy([...game.players].reverse(), "points").map(
-                  (player) => ({
-                    ...player,
-                    point: 0,
-                    fails: 0,
-                  })
-                ),
-                histories: [],
-              });
-            }}
-          >
-            next game
-          </button>
-          <Link href={"/"}>
-            <a>home</a>
-          </Link>
-        </div>
-      );
-  }
+        );
+      case "finished":
+        return (
+          <div>
+            <Finished players={players} />
+            <button
+              onClick={() => {
+                const newId = token();
+                setGame({
+                  ...game,
+                  id: newId,
+                  state: "before",
+                  players: sortBy([...game.players].reverse(), "points").map(
+                    (player) => ({
+                      ...player,
+                      point: 0,
+                      fails: 0,
+                    })
+                  ),
+                  histories: [],
+                });
+              }}
+            >
+              next game
+            </button>
+          </div>
+        );
+    }
+  };
+  return <Layout>{content()}</Layout>;
 }

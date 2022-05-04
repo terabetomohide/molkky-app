@@ -3,6 +3,7 @@ import Link from "next/link";
 import { sortBy } from "lodash";
 import { StorageGame } from "../types";
 import { useEffect, useState } from "react";
+import Layout from "components/Layoout";
 
 export default function GamesComponent() {
   const [games, setGames] = useState<StorageGame[]>();
@@ -16,14 +17,7 @@ export default function GamesComponent() {
   }, []);
 
   if (!games) {
-    return (
-      <div>
-        empty
-        <Link href={"/"}>
-          <a>home</a>
-        </Link>
-      </div>
-    );
+    return <Layout>no data</Layout>;
   }
 
   const parseDate = (dateNumber: number) => {
@@ -34,7 +28,7 @@ export default function GamesComponent() {
   };
 
   return (
-    <div>
+    <Layout>
       {games.map(({ datetime, game: { players, state, id } }) => (
         <div key={`${datetime}`}>
           <p>last update: {parseDate(datetime)}</p>
@@ -52,11 +46,6 @@ export default function GamesComponent() {
           )}
         </div>
       ))}
-      <div>
-        <Link href={"/"}>
-          <a>home</a>
-        </Link>
-      </div>
-    </div>
+    </Layout>
   );
 }
