@@ -123,7 +123,6 @@ export default function GameComponent() {
               onAddPoints={(point) => {
                 const currentPlayers = [...game.players];
                 const currentHistory = [...game.histories];
-                currentHistory.push({ playerIndex: currentPlayerIndex, point });
                 let currentPlayer = { ...currentPlayers[currentPlayerIndex] };
 
                 // 0が続いてもpointが入ればfailsはリセットされる
@@ -137,6 +136,12 @@ export default function GameComponent() {
                 if (fails === maxFails) {
                   newPoint = 0;
                 }
+                currentHistory.push({
+                  playerIndex: currentPlayerIndex,
+                  point,
+                  total: newPoint,
+                });
+
                 currentPlayer = {
                   ...currentPlayer,
                   point: newPoint,
@@ -154,6 +159,29 @@ export default function GameComponent() {
                 setCurrentPlayerIndex((prev) =>
                   prev + 1 === length ? 0 : prev + 1
                 );
+              }}
+              histories={histories}
+              onUndo={() => {
+                let currentPlayers = [...game.players];
+                let currentHistory = [...game.histories];
+                const { playerIndex, total } =
+                  currentHistory[currentHistory.length - 1];
+                let currentPlayer = currentPlayers[playerIndex];
+                currentPlayers[playerIndex] = {
+                  ...currentPlayer,
+                  point: total,
+                };
+                currentHistory.pop();
+                let index = currentPlayerIndex - 1;
+                if (index < 0) {
+                  index = currentPlayers.length - 1;
+                }
+                setCurrentPlayerIndex(index);
+                setGame({
+                  ...game,
+                  players: currentPlayers,
+                  histories: currentHistory,
+                });
               }}
             />
           </div>

@@ -9,7 +9,11 @@ export type Game = {
 
 export type Games = Game[];
 
-export type History = { playerIndex: number; point: number; skipped?: boolean };
+export type History = {
+  playerIndex: number;
+  point: number;
+  total: number;
+};
 
 export type Histories = History[];
 
