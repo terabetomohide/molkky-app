@@ -8,6 +8,7 @@ import Playing from "components/Playing";
 import Finished from "components/Finished";
 import AddPoints from "components/AddPoints";
 import { getCurrentGame, setCurrentGame } from "utils/storage";
+import { token } from "utils/token";
 
 const maxPoint = 50;
 const reducedPoint = 25;
@@ -46,7 +47,10 @@ export default function GameComponent() {
 
   useEffect(() => {
     if (!game?.state || !game?.players.length) return;
-    setCurrentGame(String(gameId), game);
+    setCurrentGame(String(game.id), game);
+    if (gameId !== game.id) {
+      router.push(`/game/${game.id}`);
+    }
   }, [game?.state]);
 
   useEffect(() => {}, [game?.players]);
@@ -156,8 +160,10 @@ export default function GameComponent() {
           <Finished players={players} />
           <button
             onClick={() => {
+              const newId = token();
               setGame({
                 ...game,
+                id: newId,
                 state: "before",
                 players: sortBy([...game.players].reverse(), "points").map(
                   (player) => ({
