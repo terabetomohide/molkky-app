@@ -14,6 +14,78 @@ const maxPoint = 50;
 const reducedPoint = 25;
 const maxFails = 3;
 
+function undo(game: Game): Game | undefined {
+  let currentPlayers = [...game.players];
+  let currentHistory = [...game.histories];
+
+  const history = currentHistory.pop();
+  if (history) {
+    const beforeHistory = currentHistory.filter(
+      ({ playerIndex }) => playerIndex === history.playerIndex
+    );
+    if (beforeHistory.length) {
+      const { playerIndex, point } = history;
+      let currentPlayer = currentPlayers[playerIndex];
+      currentPlayers[playerIndex] = {
+        ...currentPlayer,
+        point: beforeHistory[beforeHistory.length - 1].total,
+        fails: currentPlayer.fails && point === 0 ? currentPlayer.fails - 1 : 0,
+      };
+      return {
+        ...game,
+        players: currentPlayers,
+        histories: currentHistory,
+      };
+    }
+    currentPlayers[history.playerIndex] = {
+      ...currentPlayers[history.playerIndex],
+      point: 0,
+      fails: 0,
+    };
+    return {
+      ...game,
+      players: currentPlayers,
+      histories: currentHistory,
+    };
+  }
+}
+
+function add(game: Game, currentPlayerIndex: number, point: number): Game {
+  const currentPlayers = [...game.players];
+  const currentHistory = [...game.histories];
+  let currentPlayer = { ...currentPlayers[currentPlayerIndex] };
+
+  // 0が続いてもpointが入ればfailsはリセットされる
+  let fails = point ? 0 : Number(currentPlayer.fails) + 1;
+
+  let newPoint = currentPlayer.point + point;
+
+  if (newPoint > maxPoint) {
+    newPoint = reducedPoint;
+  }
+  if (fails === maxFails) {
+    newPoint = 0;
+  }
+  currentHistory.push({
+    playerIndex: currentPlayerIndex,
+    point,
+    total: newPoint,
+  });
+
+  currentPlayer = {
+    ...currentPlayer,
+    point: newPoint,
+    fails,
+  };
+
+  currentPlayers.splice(currentPlayerIndex, 1, currentPlayer);
+  return {
+    ...game,
+    players: currentPlayers,
+    histories: currentHistory,
+  };
+}
+
 export default function GameComponent() {
   const router = useRouter();
   const { gameId } = router.query;
@@ -122,40 +194,7 @@ export default function GameComponent() {
           <div>
             <AddPoints
               onAddPoints={(point) => {
-                const currentPlayers = [...game.players];
-                const currentHistory = [...game.histories];
-                let currentPlayer = { ...currentPlayers[currentPlayerIndex] };
-
-                // 0が続いてもpointが入ればfailsはリセットされる
-                let fails = point ? 0 : Number(currentPlayer.fails) + 1;
-
-                let newPoint = currentPlayer.point + point;
-
-                if (newPoint > maxPoint) {
-                  newPoint = reducedPoint;
-                }
-                if (fails === maxFails) {
-                  newPoint = 0;
-                }
-                currentHistory.push({
-                  playerIndex: currentPlayerIndex,
-                  point,
-                  total: newPoint,
-                });
-
-                currentPlayer = {
-                  ...currentPlayer,
-                  point: newPoint,
-                  fails,
-                };
-
-                currentPlayers.splice(currentPlayerIndex, 1, currentPlayer);
-                setGame({
-                  ...game,
-                  players: currentPlayers,
-                  histories: currentHistory,
-                });
-
+                setGame(add(game, currentPlayerIndex, point));
                 const length = players.length;
                 setCurrentPlayerIndex((prev) =>
                   prev + 1 === length ? 0 : prev + 1
@@ -163,26 +202,12 @@ export default function GameComponent() {
               }}
               histories={histories}
               onUndo={() => {
-                let currentPlayers = [...game.players];
-                let currentHistory = [...game.histories];
-                const { playerIndex, total } =
-                  currentHistory[currentHistory.length - 1];
-                let currentPlayer = currentPlayers[playerIndex];
-                currentPlayers[playerIndex] = {
-                  ...currentPlayer,
-                  point: total,
-                };
-                currentHistory.pop();
                 let index = currentPlayerIndex - 1;
                 if (index < 0) {
-                  index = currentPlayers.length - 1;
+                  index = game.players.length - 1;
                 }
+                setGame(undo(game));
                 setCurrentPlayerIndex(index);
-                setGame({
-                  ...game,
-                  players: currentPlayers,
-                  histories: currentHistory,
-                });
               }}
             />
           </div>
