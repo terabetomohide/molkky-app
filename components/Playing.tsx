@@ -10,9 +10,7 @@ export default function Playing({
   histories: Histories;
 }) {
   const playerHistory = (index: number) =>
-    histories.filter(
-      ({ playerIndex, skipped }) => playerIndex === index && !skipped
-    );
+    histories.filter(({ playerIndex }) => playerIndex === index);
 
   return (
     <div>
