@@ -37,15 +37,17 @@ export default function GameComponent() {
 
     if (game?.state === "playing") {
       const winner = game.players.find((player) => player.point === maxPoint);
-      if (winner) {
-        setGame({ ...game, state: "finished" });
-      }
       const fail = game.players.find((player) => player.fails === maxFails);
-      if (fail) {
+      if (winner || fail) {
         setGame({ ...game, state: "finished" });
       }
     }
   }, [game?.histories]);
+
+  useEffect(() => {
+    if (!game?.state || !game?.players.length) return;
+    setCurrentGame(String(gameId), game);
+  }, [game?.state]);
 
   useEffect(() => {}, [game?.players]);
 
@@ -166,7 +168,6 @@ export default function GameComponent() {
                 ),
                 histories: [],
               });
-              // バックアップを取る
             }}
           >
             next game
