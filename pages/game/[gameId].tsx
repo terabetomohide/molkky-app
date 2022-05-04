@@ -53,6 +53,7 @@ export default function GameComponent() {
     if (gameId !== game.id) {
       router.push(`/game/${game.id}`);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [game?.state]);
 
   useEffect(() => {}, [game?.players]);
