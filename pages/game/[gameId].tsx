@@ -7,6 +7,7 @@ import Before from "components/Before";
 import Playing from "components/Playing";
 import Finished from "components/Finished";
 import AddPoints from "components/AddPoints";
+import { getCurrentGame, setCurrentGame } from "utils/storage";
 
 const maxPoint = 50;
 const reducedPoint = 25;
@@ -19,22 +20,20 @@ export default function GameComponent() {
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState<number>(0);
 
   useEffect(() => {
-    //保存データになければ初期値をセット
-    setGame({
-      id: String(gameId),
-      state: "before",
-      players: [],
-      history: [],
-    });
+    gameId &&
+      setGame(
+        getCurrentGame(String(gameId))?.game ?? {
+          id: String(gameId),
+          state: "before",
+          players: [],
+          histories: [],
+        }
+      );
   }, [gameId]);
 
   useEffect(() => {
-    if (!game?.history) return;
-    // 変わるたびに保存する
-    // 0が3回続いた時
-    // stateを変える
-    console.log(game?.history);
-  }, [game?.history]);
+    if (!game?.histories) return;
+    setCurrentGame(String(gameId), game);
 
     if (game?.state === "playing") {
       const winner = game.players.find((player) => player.point === maxPoint);
