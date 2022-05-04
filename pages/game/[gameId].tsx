@@ -30,6 +30,7 @@ export default function GameComponent() {
           histories: [],
         }
       );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameId]);
 
   useEffect(() => {
@@ -43,6 +44,7 @@ export default function GameComponent() {
         setGame({ ...game, state: "finished" });
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [game?.histories]);
 
   useEffect(() => {
