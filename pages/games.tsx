@@ -35,20 +35,28 @@ export default function GamesComponent() {
 
   return (
     <div>
-      {games.map(({ datetime, game }) => (
+      {games.map(({ datetime, game: { players, state, id } }) => (
         <div key={`${datetime}`}>
           <p>last update: {parseDate(datetime)}</p>
+          <p>{state}</p>
           <p>players</p>
           <ul>
-            {game.players.map(({ name, id }) => (
+            {players.map(({ name, id }) => (
               <li key={`${datetime}-${id}`}>{name}</li>
             ))}
           </ul>
+          {state !== "finished" && (
+            <Link href={`/game/${id}`}>
+              <a>resume</a>
+            </Link>
+          )}
         </div>
       ))}
-      <Link href={"/"}>
-        <a>home</a>
-      </Link>
+      <div>
+        <Link href={"/"}>
+          <a>home</a>
+        </Link>
+      </div>
     </div>
   );
 }
