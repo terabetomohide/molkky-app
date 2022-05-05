@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Game, Player, Players } from "types";
 import { sortBy } from "lodash";
 import { token } from "utils/token";
+import { t } from "utils/text";
 import { getCurrentGame, setCurrentGame } from "utils/storage";
 import Before from "components/Before";
 import Playing from "components/Playing";
@@ -72,11 +73,13 @@ function addPoint(game: Game, currentPlayerIndex: number, add: number): Game {
 }
 
 function initPlayers(players: Players): Players {
-  return sortBy([...players].reverse(), "points").map((player) => ({
-    ...player,
-    point: 0,
-    fails: 0,
-  }));
+  return sortBy([...players], "points")
+    .reverse()
+    .map((player) => ({
+      ...player,
+      point: 0,
+      fails: 0,
+    }));
 }
 
 function removePlayer(players: Players, removeId: Player["id"]): Players {
@@ -171,7 +174,7 @@ export default function GameComponent() {
                 });
               }}
             >
-              start game
+              {t["startGame"]}
             </button>
           </div>
         );
@@ -205,10 +208,11 @@ export default function GameComponent() {
       case "finished":
         return (
           <div>
-            <Finished players={players} />
+            <Finished players={sortBy([...players], "points")} />
             <button
               onClick={() => {
                 const newId = token();
+                setCurrentPlayerIndex(0);
                 setGame({
                   ...game,
                   id: newId,
@@ -218,7 +222,7 @@ export default function GameComponent() {
                 });
               }}
             >
-              next game
+              {t["nextGame"]}
             </button>
           </div>
         );

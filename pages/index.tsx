@@ -3,6 +3,7 @@ import Header from "components/Header";
 import Footer from "components/Footer";
 import Link from "next/link";
 import { token } from "utils/token";
+import { t } from "utils/text";
 
 export default function Home() {
   return (
@@ -16,12 +17,12 @@ export default function Home() {
         <ul>
           <li>
             <Link href={`/game/${token()}`}>
-              <a>new game</a>
+              <a>{t["addNewGame"]}</a>
             </Link>
           </li>
           <li>
             <Link href={"/games"}>
-              <a>past games</a>
+              <a>{t["pastGames"]}</a>
             </Link>
           </li>
         </ul>

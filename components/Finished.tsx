@@ -1,4 +1,5 @@
 import { Players, Player } from "types";
+import { t } from "utils/text";
 
 export default function Finished({ players }: { players: Players }) {
   return (
@@ -7,9 +8,11 @@ export default function Finished({ players }: { players: Players }) {
         {!!players.length &&
           players.map(({ name, id, point }: Player, index) => (
             <li key={id}>
-              <span>name:{name}</span>
-              <span>point:{point}</span>
-              {point === 50 && <span>[winner]</span>}
+              <div>{name}</div>
+              <div>
+                {t["point"]}:{point}
+                {point === 50 && <span> {t["winner"]}</span>}
+              </div>
             </li>
           ))}
       </ul>

@@ -1,4 +1,5 @@
 import { Players, Player, Histories } from "types";
+import { t } from "utils/text";
 
 export default function Playing({
   players,
@@ -28,9 +29,10 @@ export default function Playing({
               }
             >
               <div>
-                <span>name:{name} </span>
-                <span>point:{point}</span>
-                <span>fails:{fails}</span>
+                <div>{name} </div>
+                <div>
+                  {t["point"]}:{point}
+                </div>
               </div>
               <div>
                 {playerHistory(index).map(({ add }, index) => (

@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { List as MovableList, arrayMove } from "react-movable";
+import { List as MovableList } from "react-movable";
 import { token } from "utils/token";
+import { t } from "utils/text";
 
 import { Players, Player } from "types";
 
@@ -47,57 +48,56 @@ export default function Before({
           );
         }}
       />
-      <div>
-        <ul>
-          <li>
-            {player ? (
-              <>
-                <input
-                  onChange={(e) => {
-                    setPlayer({
-                      ...player,
-                      name: e.target.value,
-                    });
-                  }}
-                  value={player.name}
-                />
-                <button
-                  onClick={() => {
-                    setPlayer(undefined);
-                  }}
-                >
-                  x
-                </button>
-                <button
-                  disabled={
-                    !player.name ||
-                    !!players.find(({ name }) => name === player.name)
-                  }
-                  onClick={() => {
-                    onCreate(player);
-                    setPlayer(undefined);
-                  }}
-                >
-                  追加
-                </button>
-              </>
-            ) : (
-              <button
-                onClick={() =>
+      <ul>
+        <li>
+          {player ? (
+            <>
+              <input
+                onChange={(e) => {
                   setPlayer({
-                    id: token(),
-                    name: "",
-                    point: 0,
-                    fails: 0,
-                  })
-                }
+                    ...player,
+                    name: e.target.value,
+                  });
+                }}
+                value={player.name}
+              />
+              <button
+                onClick={() => {
+                  setPlayer(undefined);
+                }}
               >
-                add new player
+                x
               </button>
-            )}
-          </li>
-        </ul>
-      </div>
+              <button
+                disabled={
+                  !player.name ||
+                  !!players.find(({ name }) => name === player.name)
+                }
+                onClick={() => {
+                  onCreate(player);
+                  setPlayer(undefined);
+                }}
+              >
+                {t["add"]}
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={() =>
+                setPlayer({
+                  id: token(),
+                  name: "",
+                  point: 0,
+                  fails: 0,
+                })
+              }
+            >
+              {t["addNewPlayer"]}
+            </button>
+          )}
+        </li>
+      </ul>
+      <div>{t["youCanMoveOrder"]}</div>
     </>
   );
 }
