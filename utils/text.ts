@@ -1,4 +1,8 @@
 export const t = {
+  appName: "モルック スコアリングアプリ",
+  molkky: "モルック",
+  app: "アプリ",
+  scoreApp: "スコアリングアプリ",
   home: "トップページ",
   add: "追加",
   name: "名前",
@@ -22,4 +26,5 @@ export const t = {
   resume: "このゲームを再開する",
   lastUpdate: "最終更新日時",
   removeData: "データ削除",
-};
+  removeAllIfConfirm: "保存されたデータを全て削除します。",
+} as const;
