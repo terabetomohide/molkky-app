@@ -7,7 +7,7 @@ export default function AddPoints({
   onUndo,
   histories,
 }: {
-  onAddPoints: (point: number) => void;
+  onAddPoints: (add: number) => void;
   onUndo: () => void;
   histories: Histories;
 }) {

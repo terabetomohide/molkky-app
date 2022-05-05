@@ -1,64 +1,49 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { Game } from "types";
+import { Game, Player, Players } from "types";
 import { sortBy } from "lodash";
+import { token } from "utils/token";
+import { getCurrentGame, setCurrentGame } from "utils/storage";
 import Before from "components/Before";
 import Playing from "components/Playing";
 import Finished from "components/Finished";
 import AddPoints from "components/AddPoints";
 import Layout from "components/Layoout";
-import { getCurrentGame, setCurrentGame } from "utils/storage";
-import { token } from "utils/token";
+import Loading from "components/Loading";
 
 const maxPoint = 50;
 const reducedPoint = 25;
 const maxFails = 3;
 
-function undo(game: Game): Game | undefined {
+function undoHistory(game: Game): Game | undefined {
   let currentPlayers = [...game.players];
   let currentHistory = [...game.histories];
+  const removeHistory = currentHistory.pop();
+  if (!removeHistory) return;
 
-  const history = currentHistory.pop();
-  if (history) {
-    const beforeHistory = currentHistory.filter(
-      ({ playerIndex }) => playerIndex === history.playerIndex
-    );
-    if (beforeHistory.length) {
-      const { playerIndex, point } = history;
-      let currentPlayer = currentPlayers[playerIndex];
-      currentPlayers[playerIndex] = {
-        ...currentPlayer,
-        point: beforeHistory[beforeHistory.length - 1].total,
-        fails: currentPlayer.fails && point === 0 ? currentPlayer.fails - 1 : 0,
-      };
-      return {
-        ...game,
-        players: currentPlayers,
-        histories: currentHistory,
-      };
-    }
-    currentPlayers[history.playerIndex] = {
-      ...currentPlayers[history.playerIndex],
-      point: 0,
-      fails: 0,
-    };
-    return {
-      ...game,
-      players: currentPlayers,
-      histories: currentHistory,
-    };
-  }
+  const { playerIndex, add, prevPoint } = removeHistory;
+  let currentPlayer = currentPlayers[playerIndex];
+  currentPlayers[playerIndex] = {
+    ...currentPlayer,
+    point: prevPoint,
+    fails: currentPlayer.fails && add === 0 ? currentPlayer.fails - 1 : 0,
+  };
+  return {
+    ...game,
+    players: currentPlayers,
+    histories: currentHistory,
+  };
 }
 
-function add(game: Game, currentPlayerIndex: number, point: number): Game {
+function addPoint(game: Game, currentPlayerIndex: number, add: number): Game {
   const currentPlayers = [...game.players];
   const currentHistory = [...game.histories];
   let currentPlayer = { ...currentPlayers[currentPlayerIndex] };
 
   // 0が続いてもpointが入ればfailsはリセットされる
-  let fails = point ? 0 : Number(currentPlayer.fails) + 1;
+  let fails = !!add ? 0 : Number(currentPlayer.fails) + 1;
 
-  let newPoint = currentPlayer.point + point;
+  let newPoint = currentPlayer.point + add;
 
   if (newPoint > maxPoint) {
     newPoint = reducedPoint;
@@ -68,8 +53,8 @@ function add(game: Game, currentPlayerIndex: number, point: number): Game {
   }
   currentHistory.push({
     playerIndex: currentPlayerIndex,
-    point,
-    total: newPoint,
+    add,
+    prevPoint: currentPlayer.point,
   });
 
   currentPlayer = {
@@ -84,6 +69,21 @@ function add(game: Game, currentPlayerIndex: number, point: number): Game {
     players: currentPlayers,
     histories: currentHistory,
   };
+}
+
+function initPlayers(players: Players): Players {
+  return sortBy([...players].reverse(), "points").map((player) => ({
+    ...player,
+    point: 0,
+    fails: 0,
+  }));
+}
+
+function removePlayer(players: Players, removeId: Player["id"]): Players {
+  const arr = [...players];
+  const index = arr.findIndex(({ id }) => id === removeId);
+  arr.splice(index, 1);
+  return arr;
 }
 
 export default function GameComponent() {
@@ -131,8 +131,7 @@ export default function GameComponent() {
   useEffect(() => {}, [game?.players]);
 
   if (!game) {
-    // 保存データ読み出し中
-    return null;
+    return <Loading />;
   }
 
   const { players, state, histories } = game;
@@ -143,27 +142,22 @@ export default function GameComponent() {
         return (
           <div>
             <Before
-              onChange={(players) => {
+              onChange={(newPlayers) => {
                 setGame({
                   ...game,
-                  players,
+                  players: newPlayers,
                 });
               }}
               onCreate={(player) => {
                 setGame({
                   ...game,
-                  players: [...game.players, player],
+                  players: [...players, player],
                 });
               }}
               onRemove={(removeId) => {
-                const currentPlayers = [...game.players];
-                const index = currentPlayers.findIndex(
-                  ({ id }) => id === removeId
-                );
-                currentPlayers.splice(index, 1);
                 setGame({
                   ...game,
-                  players: currentPlayers,
+                  players: removePlayer(players, removeId),
                 });
               }}
               players={players}
@@ -190,20 +184,19 @@ export default function GameComponent() {
               histories={histories}
             />
             <AddPoints
-              onAddPoints={(point) => {
-                setGame(add(game, currentPlayerIndex, point));
-                const length = players.length;
+              onAddPoints={(add) => {
+                setGame(addPoint(game, currentPlayerIndex, add));
                 setCurrentPlayerIndex((prev) =>
-                  prev + 1 === length ? 0 : prev + 1
+                  prev + 1 === players.length ? 0 : prev + 1
                 );
               }}
               histories={histories}
               onUndo={() => {
+                setGame(undoHistory(game));
                 let index = currentPlayerIndex - 1;
                 if (index < 0) {
                   index = game.players.length - 1;
                 }
-                setGame(undo(game));
                 setCurrentPlayerIndex(index);
               }}
             />
@@ -220,13 +213,7 @@ export default function GameComponent() {
                   ...game,
                   id: newId,
                   state: "before",
-                  players: sortBy([...game.players].reverse(), "points").map(
-                    (player) => ({
-                      ...player,
-                      point: 0,
-                      fails: 0,
-                    })
-                  ),
+                  players: initPlayers(players),
                   histories: [],
                 });
               }}

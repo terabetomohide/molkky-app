@@ -11,8 +11,8 @@ export type Games = Game[];
 
 export type History = {
   playerIndex: number;
-  point: number;
-  total: number;
+  add: number;
+  prevPoint: number;
 };
 
 export type Histories = History[];

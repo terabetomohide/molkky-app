@@ -33,10 +33,8 @@ export default function Playing({
                 <span>fails:{fails}</span>
               </div>
               <div>
-                {playerHistory(index).map(({ point }, index) => (
-                  <small key={`${index}-${point}`}>
-                    {!!point ? point : "x"}{" "}
-                  </small>
+                {playerHistory(index).map(({ add }, index) => (
+                  <small key={`${index}-${add}`}>{!!add ? add : "x"} </small>
                 ))}
               </div>
             </li>
