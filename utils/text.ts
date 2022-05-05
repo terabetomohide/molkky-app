@@ -9,6 +9,7 @@ export const t = {
   startGame: "この順番でゲーム開始",
   removeGame: "ゲーム削除",
   nextGame: "次のゲームをする",
+  noHistory: "保存された履歴はありません",
   pastGames: "ゲーム履歴",
   addNewPlayer: "新規プレイヤー追加",
   players: "参加プレイヤー",
@@ -20,4 +21,5 @@ export const t = {
   state: "ステータス",
   resume: "このゲームを再開する",
   lastUpdate: "最終更新日時",
+  removeData: "データ削除",
 };

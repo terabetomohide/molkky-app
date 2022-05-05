@@ -4,6 +4,7 @@ import Footer from "components/Footer";
 import Link from "next/link";
 import { token } from "utils/token";
 import { t } from "utils/text";
+import { resetData } from "utils/storage";
 
 export default function Home() {
   return (
@@ -26,6 +27,15 @@ export default function Home() {
             </Link>
           </li>
         </ul>
+        <button
+          onClick={() => {
+            if (window.confirm("保存されたデータを全て削除します。")) {
+              resetData();
+            }
+          }}
+        >
+          {t["removeData"]}
+        </button>
       </main>
       <Footer />
     </div>

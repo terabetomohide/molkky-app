@@ -18,7 +18,7 @@ export default function GamesComponent() {
   }, []);
 
   if (!games) {
-    return <Layout>no data</Layout>;
+    return <Layout>{t["noHistory"]}</Layout>;
   }
 
   const parseDate = (dateNumber: number) => {
