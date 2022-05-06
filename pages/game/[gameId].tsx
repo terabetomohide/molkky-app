@@ -110,7 +110,7 @@ export default function GameComponent() {
   }, [gameId]);
 
   useEffect(() => {
-    if (!game?.histories) return;
+    if (!game?.histories && !game?.players?.length) return;
     setCurrentGame(String(gameId), game);
 
     if (game?.state === "playing") {
@@ -121,7 +121,7 @@ export default function GameComponent() {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [game?.histories]);
+  }, [game?.histories, game?.players?.length]);
 
   useEffect(() => {
     if (!game?.state || !game?.players.length) return;

@@ -45,18 +45,14 @@ export default function AddPoints({
     >
       {points.map((p) => (
         <Box
+          key={`button-${String(p)}`}
           p={2}
           width={"20%"}
           display={"flex"}
           justifyContent="center"
           alignItems="center"
         >
-          <ButtonItem
-            key={`button-${String(p)}`}
-            onClick={() => onAddPoints(p)}
-          >
-            {String(p)}
-          </ButtonItem>
+          <ButtonItem onClick={() => onAddPoints(p)}>{String(p)}</ButtonItem>
         </Box>
       ))}
       <Box
