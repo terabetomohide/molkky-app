@@ -11,15 +11,7 @@ import Finished from "components/Finished";
 import AddPoints from "components/AddPoints";
 import Layout from "components/Layoout";
 import Loading from "components/Loading";
-import {
-  HStack,
-  Box,
-  Container,
-  Heading,
-  Button,
-  Input,
-  VStack,
-} from "@chakra-ui/react";
+import { Button, VStack, Box } from "@chakra-ui/react";
 
 const maxPoint = 50;
 const reducedPoint = 25;
@@ -194,11 +186,13 @@ export default function GameComponent() {
       case "playing":
         return (
           <div>
-            <Playing
-              players={players}
-              currentPlayerIndex={currentPlayerIndex}
-              histories={histories}
-            />
+            <Box mb={"250px"}>
+              <Playing
+                players={players}
+                currentPlayerIndex={currentPlayerIndex}
+                histories={histories}
+              />
+            </Box>
             <AddPoints
               onAddPoints={(add) => {
                 setGame(addPoint(game, currentPlayerIndex, add));

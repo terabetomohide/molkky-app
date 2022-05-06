@@ -1,4 +1,5 @@
 import { Players, Player, Histories } from "types";
+import { HStack, Stack, Box } from "@chakra-ui/react";
 import { t } from "utils/text";
 
 export default function Playing({
@@ -14,34 +15,34 @@ export default function Playing({
     histories.filter(({ playerIndex }) => playerIndex === index);
 
   return (
-    <div>
-      <ul>
+    <>
+      <Stack spacing={0}>
         {!!players.length &&
           players.map(({ name, id, point, fails }: Player, index) => (
-            <li
+            <Box
               key={id}
-              style={
-                currentPlayerIndex === index
-                  ? {
-                      border: "1px solid #aaa",
-                    }
-                  : undefined
-              }
+              bg={currentPlayerIndex === index ? "green.200" : "green.50"}
+              p={3}
             >
-              <div>
-                <div>{name} </div>
-                <div>
-                  {t("point")}:{point}
-                </div>
-              </div>
-              <div>
-                {playerHistory(index).map(({ add }, index) => (
-                  <small key={`${index}-${add}`}>{!!add ? add : "x"} </small>
-                ))}
-              </div>
-            </li>
+              <Stack>
+                <HStack justifyContent={"space-between"}>
+                  <Box fontWeight={600} fontSize={22}>
+                    {name}
+                  </Box>
+                  <Box fontSize={20}>
+                    <small>{t("point")} </small>
+                    {point}
+                  </Box>
+                </HStack>
+                <Box>
+                  {playerHistory(index).map(({ add }, index) => (
+                    <small key={`${index}-${add}`}>{!!add ? add : "x"} </small>
+                  ))}
+                </Box>
+              </Stack>
+            </Box>
           ))}
-      </ul>
-    </div>
+      </Stack>
+    </>
   );
 }
