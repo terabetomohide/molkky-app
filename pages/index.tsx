@@ -7,7 +7,7 @@ import { resetData } from "utils/storage";
 import { VStack, Box, Container, Heading, Button } from "@chakra-ui/react";
 
 const MenuButton = ({ label, path }: { label: string; path: string }) => (
-  <Link href={path}>
+  <Link href={path} passHref>
     <Button
       as="a"
       w={"80vw"}

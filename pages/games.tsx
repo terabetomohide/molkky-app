@@ -47,7 +47,7 @@ export default function GamesComponent() {
           </VStack>
           {state !== "finished" && (
             <VStack>
-              <Link href={`/game/${id}`}>
+              <Link href={`/game/${id}`} passHref>
                 <Button as={"a"}>{t("resume")}</Button>
               </Link>
             </VStack>
