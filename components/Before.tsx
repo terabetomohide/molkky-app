@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { List as MovableList } from "react-movable";
-import { HStack, Box, Button, Input, VStack } from "@chakra-ui/react";
+import { HStack, Box, Button, Input } from "@chakra-ui/react";
 import { CloseIcon, DragHandleIcon } from "@chakra-ui/icons";
 import { token } from "utils/token";
 import { t } from "utils/text";

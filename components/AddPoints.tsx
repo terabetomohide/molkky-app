@@ -1,5 +1,5 @@
 import React from "react";
-import { VStack, HStack, Stack, Box, Button, Grid } from "@chakra-ui/react";
+import { Box, Button } from "@chakra-ui/react";
 import { Histories } from "types";
 import { t } from "utils/text";
 

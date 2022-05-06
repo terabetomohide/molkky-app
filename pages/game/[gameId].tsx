@@ -13,7 +13,7 @@ import Layout from "components/Layoout";
 import Loading from "components/Loading";
 import { Button, VStack, Box } from "@chakra-ui/react";
 
-const maxPoint = 50;
+export const maxPoint = 50;
 const reducedPoint = 25;
 const maxFails = 3;
 
@@ -215,7 +215,10 @@ export default function GameComponent() {
       case "finished":
         return (
           <div>
-            <Finished players={sortBy([...players], "points")} />
+            <Finished
+              players={sortBy([...players], "points")}
+              histories={histories}
+            />
             <VStack m={3}>
               <Button
                 onClick={() => {

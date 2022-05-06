@@ -3,6 +3,7 @@ import Link from "next/link";
 import { sortBy } from "lodash";
 import { StorageGame } from "types";
 import { useEffect, useState } from "react";
+import { VStack, Box, Button, Stack, Text } from "@chakra-ui/react";
 import Layout from "components/Layoout";
 import { t } from "utils/text";
 
@@ -31,26 +32,27 @@ export default function GamesComponent() {
   return (
     <Layout>
       {games.map(({ datetime, game: { players, state, id } }) => (
-        <div key={`${datetime}`}>
-          <p>
+        <Stack key={`${datetime}`} py={5} px={3}>
+          <Box>
             {t("lastUpdate")}: {parseDate(datetime)}
-          </p>
-          <p>
+          </Box>
+          <Box>
             {t("state")}: {t(state)}
-          </p>
-          <p>{t("players")}:</p>
-          <ul>
+          </Box>
+          <Box>{t("players")}:</Box>
+          <VStack>
             {players.map(({ name, id }) => (
-              <li key={`${datetime}-${id}`}>{name}</li>
+              <Text key={`${datetime}-${id}`}>{name}</Text>
             ))}
-          </ul>
+          </VStack>
           {state !== "finished" && (
-            <Link href={`/game/${id}`}>
-              <a> {t("resume")}</a>
-            </Link>
+            <VStack>
+              <Link href={`/game/${id}`}>
+                <Button as={"a"}>{t("resume")}</Button>
+              </Link>
+            </VStack>
           )}
-          <hr />
-        </div>
+        </Stack>
       ))}
     </Layout>
   );
