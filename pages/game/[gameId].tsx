@@ -11,6 +11,15 @@ import Finished from "components/Finished";
 import AddPoints from "components/AddPoints";
 import Layout from "components/Layoout";
 import Loading from "components/Loading";
+import {
+  HStack,
+  Box,
+  Container,
+  Heading,
+  Button,
+  Input,
+  VStack,
+} from "@chakra-ui/react";
 
 const maxPoint = 50;
 const reducedPoint = 25;
@@ -165,17 +174,21 @@ export default function GameComponent() {
               }}
               players={players}
             />
-            <button
-              disabled={!game.players.length}
-              onClick={() => {
-                setGame({
-                  ...game,
-                  state: "playing",
-                });
-              }}
-            >
-              {t("startGame")}
-            </button>
+            <VStack m={3}>
+              <Button
+                size={"lg"}
+                bg={"green.100"}
+                disabled={!game.players.length}
+                onClick={() => {
+                  setGame({
+                    ...game,
+                    state: "playing",
+                  });
+                }}
+              >
+                {t("startGame")}
+              </Button>
+            </VStack>
           </div>
         );
       case "playing":
@@ -209,21 +222,23 @@ export default function GameComponent() {
         return (
           <div>
             <Finished players={sortBy([...players], "points")} />
-            <button
-              onClick={() => {
-                const newId = token();
-                setCurrentPlayerIndex(0);
-                setGame({
-                  ...game,
-                  id: newId,
-                  state: "before",
-                  players: initPlayers(players),
-                  histories: [],
-                });
-              }}
-            >
-              {t("nextGame")}
-            </button>
+            <VStack m={3}>
+              <Button
+                onClick={() => {
+                  const newId = token();
+                  setCurrentPlayerIndex(0);
+                  setGame({
+                    ...game,
+                    id: newId,
+                    state: "before",
+                    players: initPlayers(players),
+                    histories: [],
+                  });
+                }}
+              >
+                {t("nextGame")}
+              </Button>
+            </VStack>
           </div>
         );
     }

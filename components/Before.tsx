@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { List as MovableList } from "react-movable";
+import { HStack, Box, Button, Input, VStack } from "@chakra-ui/react";
+import { CloseIcon, DragHandleIcon } from "@chakra-ui/icons";
 import { token } from "utils/token";
 import { t } from "utils/text";
 
@@ -27,77 +29,77 @@ export default function Before({
           newPlayers.splice(newIndex, 0, players[oldIndex]);
           onChange(newPlayers);
         }}
-        renderList={({ children, props }) => <ul {...props}>{children}</ul>}
-        renderItem={({ value, props }) => {
+        renderList={({ children, props }) => <Box {...props}>{children}</Box>}
+        renderItem={({ value, props, isDragged }) => {
           const { id, name } = value;
           return (
-            <li {...props}>
-              <div>
-                <span
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                  }}
-                >
-                  =
-                </span>
-                <span>{name}</span>
-                <button onClick={() => onRemove(id)}>x</button>
-              </div>
-            </li>
+            <HStack {...props} p={2} bg={isDragged ? "gray.100" : undefined}>
+              <Box
+                px={2}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                }}
+              >
+                <DragHandleIcon />
+              </Box>
+              <Box flex={1}>{name}</Box>
+              <Button onClick={() => onRemove(id)} disabled={isDragged}>
+                <CloseIcon />
+              </Button>
+            </HStack>
           );
         }}
       />
-      <ul>
-        <li>
-          {player ? (
-            <>
-              <input
-                onChange={(e) => {
-                  setPlayer({
-                    ...player,
-                    name: e.target.value,
-                  });
-                }}
-                value={player.name}
-              />
-              <button
-                onClick={() => {
-                  setPlayer(undefined);
-                }}
-              >
-                x
-              </button>
-              <button
-                disabled={
-                  !player.name ||
-                  !!players.find(({ name }) => name === player.name)
-                }
-                onClick={() => {
-                  onCreate(player);
-                  setPlayer(undefined);
-                }}
-              >
-                {t("add")}
-              </button>
-            </>
-          ) : (
-            <button
-              onClick={() =>
-                setPlayer({
-                  id: token(),
-                  name: "",
-                  point: 0,
-                  fails: 0,
-                })
-              }
-            >
-              {t("addNewPlayer")}
-            </button>
-          )}
-        </li>
-      </ul>
-      <div>{t("youCanMoveOrder")}</div>
+      {player ? (
+        <HStack p={2}>
+          <Input
+            autoFocus
+            onChange={(e) => {
+              setPlayer({
+                ...player,
+                name: e.target.value,
+              });
+            }}
+            value={player.name}
+          />
+          <Button
+            onClick={() => {
+              setPlayer(undefined);
+            }}
+          >
+            <CloseIcon />
+          </Button>
+          <Button
+            disabled={
+              !player.name || !!players.find(({ name }) => name === player.name)
+            }
+            onClick={() => {
+              onCreate(player);
+              setPlayer(undefined);
+            }}
+          >
+            {t("add")}
+          </Button>
+        </HStack>
+      ) : (
+        <Box my={4} mx={2}>
+          <Button
+            isFullWidth
+            onClick={() =>
+              setPlayer({
+                id: token(),
+                name: "",
+                point: 0,
+                fails: 0,
+              })
+            }
+          >
+            {t("addNewPlayer")}
+          </Button>
+        </Box>
+      )}
+      <Box p={3}>{t("youCanMoveOrder")}</Box>
     </>
   );
 }
