@@ -10,32 +10,32 @@ export default function Home() {
   return (
     <div className="container">
       <Head>
-        <title>{t["appName"]}</title>
+        <title>{t("appName")}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <Header title={t["molkky"]} />
-        <h3>{t["scoreApp"]}</h3>
+        <Header title={t("molkky")} />
+        <h3>{t("scoreApp")}</h3>
         <ul>
           <li>
             <Link href={`/game/${token()}`}>
-              <a>{t["addNewGame"]}</a>
+              <a>{t("addNewGame")}</a>
             </Link>
           </li>
           <li>
             <Link href={"/games"}>
-              <a>{t["pastGames"]}</a>
+              <a>{t("pastGames")}</a>
             </Link>
           </li>
         </ul>
         <button
           onClick={() => {
-            if (window.confirm(t["removeAllIfConfirm"])) {
+            if (window.confirm(t("removeAllIfConfirm"))) {
               resetData();
             }
           }}
         >
-          {t["removeData"]}
+          {t("removeData")}
         </button>
       </main>
       <Footer />

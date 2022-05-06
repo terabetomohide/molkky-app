@@ -174,7 +174,7 @@ export default function GameComponent() {
                 });
               }}
             >
-              {t["startGame"]}
+              {t("startGame")}
             </button>
           </div>
         );
@@ -222,7 +222,7 @@ export default function GameComponent() {
                 });
               }}
             >
-              {t["nextGame"]}
+              {t("nextGame")}
             </button>
           </div>
         );

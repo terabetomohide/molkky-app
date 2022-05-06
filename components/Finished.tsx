@@ -10,8 +10,8 @@ export default function Finished({ players }: { players: Players }) {
             <li key={id}>
               <div>{name}</div>
               <div>
-                {t["point"]}:{point}
-                {point === 50 && <span> {t["winner"]}</span>}
+                {t("point")}:{point}
+                {point === 50 && <span> {t("winner")}</span>}
               </div>
             </li>
           ))}

@@ -20,7 +20,7 @@ export default function AddPoints({
         </button>
       ))}
       <button onClick={onUndo} disabled={!histories.length}>
-        {t["undo"]}
+        {t("undo")}
       </button>
     </div>
   );

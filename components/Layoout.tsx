@@ -6,7 +6,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div>
       <Link href={"/"}>
-        <a> {t["home"]}</a>
+        <a> {t("home")}</a>
       </Link>
       <hr />
       <div>{children}</div>

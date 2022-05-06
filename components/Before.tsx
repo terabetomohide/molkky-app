@@ -78,7 +78,7 @@ export default function Before({
                   setPlayer(undefined);
                 }}
               >
-                {t["add"]}
+                {t("add")}
               </button>
             </>
           ) : (
@@ -92,12 +92,12 @@ export default function Before({
                 })
               }
             >
-              {t["addNewPlayer"]}
+              {t("addNewPlayer")}
             </button>
           )}
         </li>
       </ul>
-      <div>{t["youCanMoveOrder"]}</div>
+      <div>{t("youCanMoveOrder")}</div>
     </>
   );
 }

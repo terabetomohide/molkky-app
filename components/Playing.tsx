@@ -31,7 +31,7 @@ export default function Playing({
               <div>
                 <div>{name} </div>
                 <div>
-                  {t["point"]}:{point}
+                  {t("point")}:{point}
                 </div>
               </div>
               <div>

@@ -1,4 +1,34 @@
-export const t = {
+export type TextKeys =
+  | "appName"
+  | "molkky"
+  | "app"
+  | "scoreApp"
+  | "home"
+  | "add"
+  | "name"
+  | "point"
+  | "undo"
+  | "addNew"
+  | "addNewGame"
+  | "startGame"
+  | "removeGame"
+  | "nextGame"
+  | "noHistory"
+  | "pastGames"
+  | "addNewPlayer"
+  | "players"
+  | "youCanMoveOrder"
+  | "winner"
+  | "playing"
+  | "before"
+  | "finished"
+  | "state"
+  | "resume"
+  | "lastUpdate"
+  | "removeData"
+  | "removeAllIfConfirm";
+
+export const text: { [key in TextKeys]: string } = {
   appName: "モルック スコアリングアプリ",
   molkky: "モルック",
   app: "アプリ",
@@ -28,3 +58,11 @@ export const t = {
   removeData: "データ削除",
   removeAllIfConfirm: "保存されたデータを全て削除します。",
 } as const;
+
+export function t(key: TextKeys): string {
+  try {
+    return text[key];
+  } catch {
+    return "undefined text";
+  }
+}

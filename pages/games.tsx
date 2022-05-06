@@ -18,7 +18,7 @@ export default function GamesComponent() {
   }, []);
 
   if (!games) {
-    return <Layout>{t["noHistory"]}</Layout>;
+    return <Layout>{t("noHistory")}</Layout>;
   }
 
   const parseDate = (dateNumber: number) => {
@@ -33,12 +33,12 @@ export default function GamesComponent() {
       {games.map(({ datetime, game: { players, state, id } }) => (
         <div key={`${datetime}`}>
           <p>
-            {t["lastUpdate"]}: {parseDate(datetime)}
+            {t("lastUpdate")}: {parseDate(datetime)}
           </p>
           <p>
-            {t["state"]}: {t[state]}
+            {t("state")}: {t(state)}
           </p>
-          <p>{t["players"]}:</p>
+          <p>{t("players")}:</p>
           <ul>
             {players.map(({ name, id }) => (
               <li key={`${datetime}-${id}`}>{name}</li>
@@ -46,7 +46,7 @@ export default function GamesComponent() {
           </ul>
           {state !== "finished" && (
             <Link href={`/game/${id}`}>
-              <a> {t["resume"]}</a>
+              <a> {t("resume")}</a>
             </Link>
           )}
           <hr />
