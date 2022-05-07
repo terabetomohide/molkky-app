@@ -119,7 +119,7 @@ export default function GameComponent() {
 
   useEffect(() => {
     if (!gameId) return;
-    socketInitializer();
+    //    socketInitializer();
     const currentGame = getCurrentGame(String(gameId));
     const newGame = () =>
       setGame({

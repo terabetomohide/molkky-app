@@ -13,25 +13,28 @@ export const getAllGames: () => Storage | null = () => {
 
 export const getCurrentGame: (gameId: string) => Promise<Game> = (gameId) => {
   const storage: Storage = getAllGames() || {};
-  return fetch(`/api/game/${gameId}`, {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  })
-    .then((response) => response.json())
-    .catch(() => {
-      return storage?.[gameId]?.game ?? null;
-    });
+  // return fetch(`/api/game/${gameId}`, {
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //   },
+  // })
+  //   .then((response) => response.json())
+  //   .catch(() => {
+  //     return storage?.[gameId]?.game ?? null;
+  //   });
+  return new Promise((resolve) => {
+    resolve(storage?.[gameId]?.game ?? null);
+  });
 };
 
 export const setCurrentGame: (id: string, game: Game) => void = (id, game) => {
-  fetch(`/api/game/${id}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(game),
-  });
+  // fetch(`/api/game/${id}`, {
+  //   method: "POST",
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //   },
+  //   body: JSON.stringify(game),
+  // });
   console.log("setCurrentGame");
 
   const storage = getAllGames();
