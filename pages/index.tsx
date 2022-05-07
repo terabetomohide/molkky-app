@@ -4,7 +4,14 @@ import Link from "next/link";
 import { token } from "utils/token";
 import { t } from "utils/text";
 import { resetData } from "utils/storage";
-import { VStack, Box, Container, Heading, Button } from "@chakra-ui/react";
+import {
+  VStack,
+  Box,
+  Container,
+  Heading,
+  Button,
+  Flex,
+} from "@chakra-ui/react";
 
 const MenuButton = ({ label, path }: { label: string; path: string }) => (
   <Link href={path} passHref>
@@ -31,43 +38,49 @@ export default function Home() {
       </Head>
       <main>
         <Container p={0}>
-          <Heading
-            as="h1"
-            size="3xl"
-            pt={20}
-            width={"100%"}
-            color={"green.400"}
+          <Flex
+            direction={"column"}
+            h={"100vh"}
+            justifyContent={"space-between"}
           >
-            <VStack letterSpacing={5}>
-              <Box>{t("molkky")}</Box>
-              <Box fontSize={18}>{t("scoreApp")} </Box>
-            </VStack>
-          </Heading>
-          <Box height={"calc(100vh - 250px)"}>
-            <VStack
-              display="flex"
-              height={"100%"}
-              alignItems="center"
-              justifyContent="center"
-              spacing={5}
+            <Heading
+              as="h1"
+              size="3xl"
+              pt={20}
+              width={"100%"}
+              color={"green.400"}
             >
-              <MenuButton label={t("addNewGame")} path={`/game/${token()}`} />
-              <MenuButton label={t("pastGames")} path={"/games"} />
-            </VStack>
-          </Box>
-          <VStack>
+              <VStack letterSpacing={5}>
+                <Box>{t("molkky")}</Box>
+                <Box fontSize={18}>{t("scoreApp")} </Box>
+              </VStack>
+            </Heading>
             <Box>
-              <Button
-                onClick={() => {
-                  if (window.confirm(t("removeAllIfConfirm"))) {
-                    resetData();
-                  }
-                }}
+              <VStack
+                display="flex"
+                height={"100%"}
+                alignItems="center"
+                justifyContent="center"
+                spacing={5}
               >
-                {t("removeData")}
-              </Button>
+                <MenuButton label={t("addNewGame")} path={`/game/${token()}`} />
+                <MenuButton label={t("pastGames")} path={"/games"} />
+              </VStack>
             </Box>
-          </VStack>
+            <VStack>
+              <Box p={10}>
+                <Button
+                  onClick={() => {
+                    if (window.confirm(t("removeAllIfConfirm"))) {
+                      resetData();
+                    }
+                  }}
+                >
+                  {t("removeData")}
+                </Button>
+              </Box>
+            </VStack>
+          </Flex>
         </Container>
       </main>
       <Footer />

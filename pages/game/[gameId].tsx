@@ -110,7 +110,7 @@ export default function GameComponent() {
   }, [gameId]);
 
   useEffect(() => {
-    if (!game?.histories && !game?.players?.length) return;
+    if (!game?.histories || !game?.players?.length) return;
     setCurrentGame(String(gameId), game);
 
     if (game?.state === "playing") {
