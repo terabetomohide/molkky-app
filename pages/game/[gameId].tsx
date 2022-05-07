@@ -74,13 +74,11 @@ function addPoint(game: Game, currentPlayerIndex: number, add: number): Game {
 }
 
 function initPlayers(players: Players): Players {
-  return sortBy([...players], "points")
-    .reverse()
-    .map((player) => ({
-      ...player,
-      point: 0,
-      fails: 0,
-    }));
+  return sortBy([...players], "point").map((player) => ({
+    ...player,
+    point: 0,
+    fails: 0,
+  }));
 }
 
 function removePlayer(players: Players, removeId: Player["id"]): Players {
@@ -216,7 +214,7 @@ export default function GameComponent() {
         return (
           <div>
             <Finished
-              players={sortBy([...players], "points")}
+              players={sortBy([...players], "point").reverse()}
               histories={histories}
             />
             <VStack m={3}>
