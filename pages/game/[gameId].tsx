@@ -1,7 +1,7 @@
 import React, { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Game, Player, Players } from "types";
-import { sortBy } from "lodash";
+import { sortBy, isEqual } from "lodash";
 import { token } from "utils/token";
 import { t } from "utils/text";
 import { getCurrentGame, setCurrentGame } from "utils/storage";
@@ -13,6 +13,8 @@ import Layout from "components/Layoout";
 import Loading from "components/Loading";
 import { Button, VStack, Box } from "@chakra-ui/react";
 import SlideConfirm from "components/SlideComfirm";
+
+import { io } from "socket.io-client";
 
 export const maxPoint = 50;
 const reducedPoint = 25;
@@ -96,16 +98,47 @@ export default function GameComponent() {
   const [confirmIndex, setConfirmIndex] = useState<number | null>(null);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState<number>(0);
 
+  const socketInitializer: () => void = async () => {
+    const socket = io("", {
+      path: "/api/socketio",
+    });
+    socket.on("connect", () => {
+      console.log("SOCKET CONNECTED!", socket.id);
+    });
+
+    socket.on(String(gameId), (data: Game) => {
+      console.log(1);
+      console.log(isEqual(data, game));
+      console.log(data, game);
+      if (!isEqual(data, game)) {
+        setGame(data);
+      }
+    });
+    if (socket) return () => socket.disconnect();
+  };
+
   useEffect(() => {
-    gameId &&
-      setGame(
-        getCurrentGame(String(gameId))?.game ?? {
-          id: String(gameId),
-          state: "before",
-          players: [],
-          histories: [],
+    if (!gameId) return;
+    socketInitializer();
+    const currentGame = getCurrentGame(String(gameId));
+    const newGame = () =>
+      setGame({
+        id: String(gameId),
+        state: "before",
+        players: [],
+        histories: [],
+      });
+    currentGame
+      .then((data) => {
+        if (data) {
+          setGame(data);
+        } else {
+          newGame();
         }
-      );
+      })
+      .catch(() => {
+        newGame();
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameId]);
 
@@ -125,7 +158,7 @@ export default function GameComponent() {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [game?.histories, game?.players?.length]);
+  }, [game?.histories?.length, game?.players?.length]);
 
   useEffect(() => {
     if (!game?.state || !game?.players.length) return;
