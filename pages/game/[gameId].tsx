@@ -1,4 +1,4 @@
-import { useRouter } from "next/router";
+import React, { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Game, Player, Players } from "types";
 import { sortBy } from "lodash";
@@ -12,6 +12,7 @@ import AddPoints from "components/AddPoints";
 import Layout from "components/Layoout";
 import Loading from "components/Loading";
 import { Button, VStack, Box } from "@chakra-ui/react";
+import SlideConfirm from "components/SlideComfirm";
 
 export const maxPoint = 50;
 const reducedPoint = 25;
@@ -92,6 +93,7 @@ export default function GameComponent() {
   const router = useRouter();
   const { gameId } = router.query;
   const [game, setGame] = useState<Game>();
+  const [confirmIndex, setConfirmIndex] = useState<number | null>(null);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState<number>(0);
 
   useEffect(() => {
@@ -115,7 +117,11 @@ export default function GameComponent() {
       const winner = game.players.find((player) => player.point === maxPoint);
       const fail = game.players.find((player) => player.fails === maxFails);
       if (winner || fail) {
-        setGame({ ...game, state: "finished" });
+        let index = currentPlayerIndex - 1;
+        if (index < 0) {
+          index = game.players.length - 1;
+        }
+        setConfirmIndex(index);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -135,6 +141,15 @@ export default function GameComponent() {
   if (!game) {
     return <Loading />;
   }
+
+  const undoHandler = () => {
+    setGame(undoHistory(game));
+    let index = currentPlayerIndex - 1;
+    if (index < 0) {
+      index = game.players.length - 1;
+    }
+    setCurrentPlayerIndex(index);
+  };
 
   const { players, state, histories } = game;
 
@@ -189,8 +204,23 @@ export default function GameComponent() {
                 players={players}
                 currentPlayerIndex={currentPlayerIndex}
                 histories={histories}
+                confirmIndex={confirmIndex}
               />
             </Box>
+            <SlideConfirm
+              open={typeof confirmIndex === "number"}
+              title={t("mayIFinished")}
+              cancelLabel={t("undo")}
+              submitLabel={t("finishOnThisResult")}
+              onSubmit={() => {
+                setGame({ ...game, state: "finished" });
+                setConfirmIndex(null);
+              }}
+              onCancel={() => {
+                undoHandler();
+                setConfirmIndex(null);
+              }}
+            />
             <AddPoints
               onAddPoints={(add) => {
                 setGame(addPoint(game, currentPlayerIndex, add));
@@ -200,12 +230,7 @@ export default function GameComponent() {
               }}
               histories={histories}
               onUndo={() => {
-                setGame(undoHistory(game));
-                let index = currentPlayerIndex - 1;
-                if (index < 0) {
-                  index = game.players.length - 1;
-                }
-                setCurrentPlayerIndex(index);
+                undoHandler();
               }}
             />
           </div>

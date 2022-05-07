@@ -1,4 +1,6 @@
 export type TextKeys =
+  | "ok"
+  | "cancel"
   | "appName"
   | "molkky"
   | "app"
@@ -22,6 +24,8 @@ export type TextKeys =
   | "playing"
   | "before"
   | "finished"
+  | "finishOnThisResult"
+  | "mayIFinished"
   | "state"
   | "resume"
   | "lastUpdate"
@@ -29,6 +33,8 @@ export type TextKeys =
   | "removeAllIfConfirm";
 
 export const text: { [key in TextKeys]: string } = {
+  ok: "OK",
+  cancel: "キャンセル",
   appName: "モルック スコアリングアプリ",
   molkky: "モルック",
   app: "アプリ",
@@ -52,6 +58,8 @@ export const text: { [key in TextKeys]: string } = {
   playing: "プレイ中",
   before: "開始前",
   finished: "終了",
+  mayIFinished: "終了してよろしいですか？",
+  finishOnThisResult: "この結果で終了する",
   state: "ステータス",
   resume: "このゲームを再開する",
   lastUpdate: "最終更新日時",
