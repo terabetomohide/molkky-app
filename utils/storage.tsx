@@ -1,4 +1,5 @@
 import { Game, Storage } from "../types";
+import { api } from "../config/socket";
 
 const rootStorageKey = "molkky-app";
 
@@ -13,7 +14,7 @@ export const getAllGames: () => Storage | null = () => {
 
 export const getCurrentGame: (gameId: string) => Promise<Game> = (gameId) => {
   const storage: Storage = getAllGames() || {};
-  return fetch(`/api/game/${gameId}`, {
+  return fetch(`${api}/game/${gameId}`, {
     headers: {
       "Content-Type": "application/json",
     },
@@ -25,14 +26,13 @@ export const getCurrentGame: (gameId: string) => Promise<Game> = (gameId) => {
 };
 
 export const setCurrentGame: (id: string, game: Game) => void = (id, game) => {
-  fetch(`/api/game/${id}`, {
+  fetch(`${api}/game/${id}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(game),
   });
-  console.log("setCurrentGame");
 
   const storage = getAllGames();
   let newStorage: Storage;

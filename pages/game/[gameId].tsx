@@ -15,6 +15,7 @@ import { Button, VStack, Box } from "@chakra-ui/react";
 import SlideConfirm from "components/SlideComfirm";
 
 import { io } from "socket.io-client";
+import { api } from "config/socket";
 
 export const maxPoint = 50;
 const reducedPoint = 25;
@@ -99,11 +100,14 @@ export default function GameComponent() {
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState<number>(0);
 
   const socketInitializer: () => void = async () => {
-    const socket = io("", {
-      path: "/api/socketio",
+    const socket = io(api, {
+      withCredentials: true,
+      forceNew: true,
     });
-    socket.on("connect", () => {
-      console.log("SOCKET CONNECTED!", socket.id);
+    console.log(socket);
+
+    socket.on("connection", (message) => {
+      console.log("SOCKET CONNECTED!", socket.id, message);
     });
 
     socket.on(String(gameId), (data: Game) => {
