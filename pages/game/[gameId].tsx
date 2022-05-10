@@ -20,6 +20,7 @@ import { api } from "config/socket";
 export const maxPoint = 50;
 const reducedPoint = 25;
 const maxFails = 3;
+const userId = token();
 
 function undoHistory(game: Game): Game | undefined {
   let currentPlayers = [...game.players];
@@ -111,12 +112,15 @@ export default function GameComponent() {
       console.log("SOCKET CONNECTED!", socket.id, message);
     });
 
-    socket.on(String(gameId), (data: Game) => {
-      console.log(isEqual(data, game));
-      console.log(data, game);
+    socket.on(String(gameId), (data: { game: Game; userId: string }) => {
       setLoading(true);
-      if ((!data && !game) || !isEqual(data, game)) {
-        setGame(data);
+      console.log(userId, data.userId);
+      if (
+        userId !== data.userId &&
+        ((!data && !game) || !isEqual(data, game))
+      ) {
+        console.log("set game");
+        setGame(data.game);
       }
       setTimeout(() => setLoading(false), 100);
     });
@@ -152,7 +156,9 @@ export default function GameComponent() {
     if (!game?.histories || !game?.players?.length) return;
     setLoading(true);
     setConfirmIndex(null);
-    setCurrentGame(String(gameId), game).finally(() => setLoading(false));
+    setCurrentGame(String(gameId), game, userId).finally(() =>
+      setLoading(false)
+    );
 
     if (game?.state === "playing") {
       const winner = game.players.find((player) => player.point === maxPoint);
@@ -171,7 +177,9 @@ export default function GameComponent() {
   useEffect(() => {
     if (!game?.state || !game?.players.length) return;
     setLoading(true);
-    setCurrentGame(String(game.id), game).finally(() => setLoading(false));
+    setCurrentGame(String(game.id), game, userId).finally(() =>
+      setLoading(false)
+    );
     if (gameId !== game.id) {
       router.push(`/game/${game.id}`);
     }
@@ -265,6 +273,7 @@ export default function GameComponent() {
             />
             <AddPoints
               onAddPoints={(add) => {
+                if (loading) return;
                 setGame(addPoint(game, currentPlayerIndex, add));
                 setCurrentPlayerIndex((prev) =>
                   prev + 1 === players.length ? 0 : prev + 1
@@ -274,7 +283,6 @@ export default function GameComponent() {
               onUndo={() => {
                 undoHandler();
               }}
-              disabled={loading}
             />
           </div>
         );

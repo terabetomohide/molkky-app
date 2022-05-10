@@ -25,10 +25,11 @@ export const getCurrentGame: (gameId: string) => Promise<Game> = (gameId) => {
     });
 };
 
-export const setCurrentGame: (id: string, game: Game) => Promise<Response> = (
-  id,
-  game
-) => {
+export const setCurrentGame: (
+  id: string,
+  game: Game,
+  userId: string
+) => Promise<Response> = (id, game, userId) => {
   const storage = getAllGames();
   let newStorage: Storage;
   if (!storage) {
@@ -47,6 +48,9 @@ export const setCurrentGame: (id: string, game: Game) => Promise<Response> = (
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(game),
+    body: JSON.stringify({
+      userId,
+      game,
+    }),
   });
 };
