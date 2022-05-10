@@ -26,12 +26,16 @@ export default function Playing({
     return "green.50";
   };
 
+  const lastPlayerIndex = histories.length
+    ? histories[histories.length - 1].playerIndex
+    : undefined;
+
   return (
     <>
       <Stack spacing={0}>
         {!!players.length &&
-          players.map(({ name, id, point, fails }: Player, index) => (
-            <Box key={id} bg={bgColor(index)} p={3}>
+          players.map(({ name, id, point, fails }: Player, playerIndex) => (
+            <Box key={id} bg={bgColor(playerIndex)} p={3}>
               <Stack>
                 <HStack justifyContent={"space-between"}>
                   <Box fontWeight={600} fontSize={22}>
@@ -43,9 +47,34 @@ export default function Playing({
                   </Box>
                 </HStack>
                 <Box>
-                  {playerHistory(index).map(({ add }, index) => (
-                    <small key={`${index}-${add}`}>{!!add ? add : "x"} </small>
-                  ))}
+                  {playerHistory(playerIndex).map(({ add }, index) => {
+                    const isLastHistory =
+                      playerHistory(playerIndex).length - 1 === index;
+                    const isLastPlayer = playerIndex === lastPlayerIndex;
+                    return (
+                      <Box
+                        px={0.5}
+                        display={"inline-block"}
+                        key={`${index}-${add}`}
+                        fontSize={isLastHistory && fails === 2 ? 18 : 14}
+                        fontWeight={
+                          isLastHistory && isLastPlayer ? "bold" : undefined
+                        }
+                        color={
+                          isLastHistory && isLastPlayer
+                            ? "blackAlpha.500"
+                            : "blackAlpha.700"
+                        }
+                        borderBottom={
+                          isLastHistory && fails === 2
+                            ? "2px solid #f00"
+                            : undefined
+                        }
+                      >
+                        {!!add ? add : "x"}
+                      </Box>
+                    );
+                  })}
                 </Box>
               </Stack>
             </Box>
