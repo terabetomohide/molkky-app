@@ -96,6 +96,7 @@ export default function GameComponent() {
   const router = useRouter();
   const { gameId } = router.query;
   const [game, setGame] = useState<Game>();
+  const [loading, setLoading] = useState<boolean>(false);
   const [confirmIndex, setConfirmIndex] = useState<number | null>(null);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState<number>(0);
 
@@ -111,12 +112,13 @@ export default function GameComponent() {
     });
 
     socket.on(String(gameId), (data: Game) => {
-      console.log(1);
       console.log(isEqual(data, game));
       console.log(data, game);
-      if (!isEqual(data, game)) {
+      setLoading(true);
+      if ((!data && !game) || !isEqual(data, game)) {
         setGame(data);
       }
+      setTimeout(() => setLoading(false), 100);
     });
     if (socket) return () => socket.disconnect();
   };
@@ -148,7 +150,9 @@ export default function GameComponent() {
 
   useEffect(() => {
     if (!game?.histories || !game?.players?.length) return;
-    setCurrentGame(String(gameId), game);
+    setLoading(true);
+    setConfirmIndex(null);
+    setCurrentGame(String(gameId), game).finally(() => setLoading(false));
 
     if (game?.state === "playing") {
       const winner = game.players.find((player) => player.point === maxPoint);
@@ -166,7 +170,8 @@ export default function GameComponent() {
 
   useEffect(() => {
     if (!game?.state || !game?.players.length) return;
-    setCurrentGame(String(game.id), game);
+    setLoading(true);
+    setCurrentGame(String(game.id), game).finally(() => setLoading(false));
     if (gameId !== game.id) {
       router.push(`/game/${game.id}`);
     }
@@ -269,6 +274,7 @@ export default function GameComponent() {
               onUndo={() => {
                 undoHandler();
               }}
+              disabled={loading}
             />
           </div>
         );

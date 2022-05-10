@@ -8,11 +8,14 @@ const points = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 const ButtonItem = ({
   children,
   onClick,
+  disabled,
 }: {
   children: React.ReactNode;
   onClick: () => void;
+  disabled: boolean;
 }) => (
   <Button
+    disabled={disabled}
     fontSize={30}
     onClick={() => onClick()}
     w={"60px"}
@@ -27,10 +30,12 @@ export default function AddPoints({
   onAddPoints,
   onUndo,
   histories,
+  disabled,
 }: {
   onAddPoints: (add: number) => void;
   onUndo: () => void;
   histories: Histories;
+  disabled: boolean;
 }) {
   return (
     <Box
@@ -52,7 +57,9 @@ export default function AddPoints({
           justifyContent="center"
           alignItems="center"
         >
-          <ButtonItem onClick={() => onAddPoints(p)}>{String(p)}</ButtonItem>
+          <ButtonItem disabled={disabled} onClick={() => onAddPoints(p)}>
+            {String(p)}
+          </ButtonItem>
         </Box>
       ))}
       <Box
@@ -64,7 +71,7 @@ export default function AddPoints({
       >
         <Button
           onClick={onUndo}
-          disabled={!histories.length}
+          disabled={disabled || !histories.length}
           width={"100%"}
           h={"60px"}
           borderRadius={"30px"}

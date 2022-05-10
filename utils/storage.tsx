@@ -25,15 +25,10 @@ export const getCurrentGame: (gameId: string) => Promise<Game> = (gameId) => {
     });
 };
 
-export const setCurrentGame: (id: string, game: Game) => void = (id, game) => {
-  fetch(`${api}/game/${id}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(game),
-  });
-
+export const setCurrentGame: (id: string, game: Game) => Promise<Response> = (
+  id,
+  game
+) => {
   const storage = getAllGames();
   let newStorage: Storage;
   if (!storage) {
@@ -45,6 +40,13 @@ export const setCurrentGame: (id: string, game: Game) => void = (id, game) => {
     datetime: new Date().getTime(),
     game,
   };
-
   localStorage.setItem(rootStorageKey, JSON.stringify(newStorage));
+
+  return fetch(`${api}/game/${id}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(game),
+  });
 };
