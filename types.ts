@@ -2,6 +2,7 @@ export type GameState = "before" | "playing" | "finished";
 
 export type Game = {
   id: string;
+  currentPlayerIndex: number;
   state: GameState;
   players: Players;
   histories: Histories;

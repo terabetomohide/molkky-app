@@ -37,15 +37,16 @@ function undoHistory(game: Game): Game | undefined {
   };
   return {
     ...game,
+    currentPlayerIndex: playerIndex,
     players: currentPlayers,
     histories: currentHistory,
   };
 }
 
-function addPoint(game: Game, currentPlayerIndex: number, add: number): Game {
+function addPoint(game: Game, add: number): Game {
   const currentPlayers = [...game.players];
   const currentHistory = [...game.histories];
-  let currentPlayer = { ...currentPlayers[currentPlayerIndex] };
+  let currentPlayer = { ...currentPlayers[game.currentPlayerIndex] };
 
   // 0が続いてもpointが入ればfailsはリセットされる
   let fails = !!add ? 0 : Number(currentPlayer.fails) + 1;
@@ -59,7 +60,7 @@ function addPoint(game: Game, currentPlayerIndex: number, add: number): Game {
     newPoint = 0;
   }
   currentHistory.push({
-    playerIndex: currentPlayerIndex,
+    playerIndex: game.currentPlayerIndex,
     add,
     prevPoint: currentPlayer.point,
   });
@@ -70,9 +71,15 @@ function addPoint(game: Game, currentPlayerIndex: number, add: number): Game {
     fails,
   };
 
-  currentPlayers.splice(currentPlayerIndex, 1, currentPlayer);
+  let nextPlayerIndex = game.currentPlayerIndex + 1;
+  if (nextPlayerIndex === currentPlayers.length) {
+    nextPlayerIndex = 0;
+  }
+
+  currentPlayers.splice(game.currentPlayerIndex, 1, currentPlayer);
   return {
     ...game,
+    currentPlayerIndex: nextPlayerIndex,
     players: currentPlayers,
     histories: currentHistory,
   };
@@ -99,7 +106,6 @@ export default function GameComponent() {
   const [game, setGame] = useState<Game>();
   const [loading, setLoading] = useState<boolean>(false);
   const [confirmIndex, setConfirmIndex] = useState<number | null>(null);
-  const [currentPlayerIndex, setCurrentPlayerIndex] = useState<number>(0);
 
   const socketInitializer: () => void = async () => {
     const socket = io(api, {
@@ -137,6 +143,7 @@ export default function GameComponent() {
         state: "before",
         players: [],
         histories: [],
+        currentPlayerIndex: 0,
       });
     currentGame
       .then((data) => {
@@ -157,20 +164,20 @@ export default function GameComponent() {
     setLoading(true);
     setConfirmIndex(null);
     setCurrentGame(String(gameId), game, userId).finally(() => {
-      if (game?.state === "playing") {
-        const winner = game.players.find((player) => player.point === maxPoint);
-        const fail = game.players.find((player) => player.fails === maxFails);
-        if (winner || fail) {
-          let index = currentPlayerIndex - 1;
-          if (index < 0) {
-            index = game.players.length - 1;
-          }
-          setConfirmIndex(index);
-        }
-      }
       setTimeout(() => setLoading(false), 100);
     });
 
+    if (game?.state === "playing") {
+      const winner = game.players.find((player) => player.point === maxPoint);
+      const fail = game.players.find((player) => player.fails === maxFails);
+      if (winner || fail) {
+        let preIndex = game.currentPlayerIndex - 1;
+        if (preIndex < 0) {
+          preIndex = game.players.length - 1;
+        }
+        setConfirmIndex(preIndex);
+      }
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [game?.histories?.length, game?.players?.length]);
 
@@ -194,11 +201,6 @@ export default function GameComponent() {
 
   const undoHandler = () => {
     setGame(undoHistory(game));
-    let index = currentPlayerIndex - 1;
-    if (index < 0) {
-      index = game.players.length - 1;
-    }
-    setCurrentPlayerIndex(index);
   };
 
   const { players, state, histories } = game;
@@ -252,7 +254,7 @@ export default function GameComponent() {
             <Box mb={"250px"}>
               <Playing
                 players={players}
-                currentPlayerIndex={currentPlayerIndex}
+                currentPlayerIndex={game.currentPlayerIndex}
                 histories={histories}
                 confirmIndex={confirmIndex}
               />
@@ -274,10 +276,7 @@ export default function GameComponent() {
             <AddPoints
               onAddPoints={(add) => {
                 if (loading) return;
-                setGame(addPoint(game, currentPlayerIndex, add));
-                setCurrentPlayerIndex((prev) =>
-                  prev + 1 === players.length ? 0 : prev + 1
-                );
+                setGame(addPoint(game, add));
               }}
               histories={histories}
               onUndo={() => {
@@ -297,11 +296,11 @@ export default function GameComponent() {
               <Button
                 onClick={() => {
                   const newId = token();
-                  setCurrentPlayerIndex(0);
                   setGame({
                     ...game,
                     id: newId,
                     state: "before",
+                    currentPlayerIndex: 0,
                     players: initPlayers(players),
                     histories: [],
                   });
