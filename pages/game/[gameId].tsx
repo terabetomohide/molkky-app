@@ -156,21 +156,21 @@ export default function GameComponent() {
     if (!game?.histories || !game?.players?.length) return;
     setLoading(true);
     setConfirmIndex(null);
-    setCurrentGame(String(gameId), game, userId).finally(() =>
-      setLoading(false)
-    );
-
-    if (game?.state === "playing") {
-      const winner = game.players.find((player) => player.point === maxPoint);
-      const fail = game.players.find((player) => player.fails === maxFails);
-      if (winner || fail) {
-        let index = currentPlayerIndex - 1;
-        if (index < 0) {
-          index = game.players.length - 1;
+    setCurrentGame(String(gameId), game, userId).finally(() => {
+      if (game?.state === "playing") {
+        const winner = game.players.find((player) => player.point === maxPoint);
+        const fail = game.players.find((player) => player.fails === maxFails);
+        if (winner || fail) {
+          let index = currentPlayerIndex - 1;
+          if (index < 0) {
+            index = game.players.length - 1;
+          }
+          setConfirmIndex(index);
         }
-        setConfirmIndex(index);
       }
-    }
+      setTimeout(() => setLoading(false), 100);
+    });
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [game?.histories?.length, game?.players?.length]);
 
@@ -178,7 +178,7 @@ export default function GameComponent() {
     if (!game?.state || !game?.players.length) return;
     setLoading(true);
     setCurrentGame(String(game.id), game, userId).finally(() =>
-      setLoading(false)
+      setTimeout(() => setLoading(false), 100)
     );
     if (gameId !== game.id) {
       router.push(`/game/${game.id}`);
