@@ -112,8 +112,6 @@ export default function GameComponent() {
       withCredentials: true,
       forceNew: true,
     });
-    console.log(socket);
-
     socket.on("connection", (message) => {
       console.log("SOCKET CONNECTED!", socket.id, message);
     });
@@ -280,6 +278,7 @@ export default function GameComponent() {
               }}
               histories={histories}
               onUndo={() => {
+                if (loading) return;
                 undoHandler();
               }}
             />
