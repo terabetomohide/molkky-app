@@ -15,8 +15,16 @@ import {
 } from "@chakra-ui/react";
 import { useEffect } from "react";
 
-const MenuButton = ({ label, path }: { label: string; path: string }) => (
-  <Link href={path} passHref>
+const MenuButton = ({
+  label,
+  path,
+  disablePrefetch,
+}: {
+  label: string;
+  path: string;
+  disablePrefetch?: boolean;
+}) => (
+  <Link href={path} passHref prefetch={!disablePrefetch}>
     <Button
       as="a"
       w={"80vw"}
@@ -70,7 +78,11 @@ export default function Home() {
                 justifyContent="center"
                 spacing={5}
               >
-                <MenuButton label={t("addNewGame")} path={`/game/${token()}`} />
+                <MenuButton
+                  label={t("addNewGame")}
+                  path={`/game/${token()}`}
+                  disablePrefetch
+                />
                 <MenuButton label={t("pastGames")} path={"/games"} />
               </VStack>
             </Box>
