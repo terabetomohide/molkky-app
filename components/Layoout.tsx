@@ -31,6 +31,7 @@ export default function Layout({
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>();
   const router = useRouter();
   useEffect(() => {
+    if (router.pathname !== "/game/[gameId]") return;
     QRCode.toDataURL(`${host}${router.asPath}`)
       .then(setQrCodeDataUrl)
       .catch((e) => {
@@ -48,36 +49,36 @@ export default function Layout({
             </a>
           </Link>
         </Box>
-        <Box>
-          <Button onClick={onOpen}>{t("qrCode")}</Button>
-          <Modal isOpen={isOpen} onClose={onClose}>
-            <ModalOverlay />
-            <ModalContent>
-              <ModalHeader>{t("currentPagesQrCode")}</ModalHeader>
-              <ModalCloseButton />
-              <ModalBody>
-                <Box
-                  justifyContent="center"
-                  alignItems="center"
-                  textAlign={"center"}
-                >
-                  {qrCodeDataUrl && (
+        {qrCodeDataUrl && (
+          <Box>
+            <Button onClick={onOpen}>{t("qrCode")}</Button>
+            <Modal isOpen={isOpen} onClose={onClose}>
+              <ModalOverlay />
+              <ModalContent>
+                <ModalHeader>{t("currentPagesQrCode")}</ModalHeader>
+                <ModalCloseButton />
+                <ModalBody>
+                  <Box
+                    justifyContent="center"
+                    alignItems="center"
+                    textAlign={"center"}
+                  >
                     <Image
                       width={"250px"}
                       height={"250px"}
                       src={qrCodeDataUrl}
                     />
-                  )}
-                </Box>
-              </ModalBody>
-              <ModalFooter justifyContent="center" alignItems="center">
-                <Button m={3} onClick={onClose}>
-                  {t("close")}
-                </Button>
-              </ModalFooter>
-            </ModalContent>
-          </Modal>
-        </Box>
+                  </Box>
+                </ModalBody>
+                <ModalFooter justifyContent="center" alignItems="center">
+                  <Button m={3} onClick={onClose}>
+                    {t("close")}
+                  </Button>
+                </ModalFooter>
+              </ModalContent>
+            </Modal>
+          </Box>
+        )}
       </HStack>
       <Box>{children}</Box>
     </Container>
