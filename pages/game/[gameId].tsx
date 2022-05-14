@@ -291,7 +291,7 @@ export default function GameComponent({ host }: gameIdPageProps) {
                   players: sortBy([...players], "point").reverse(),
                   state: "finished",
                 };
-                setArchive(game.id, finishedGame);
+                setArchive(token(), finishedGame);
                 setGame(finishedGame);
                 setConfirmIndex(null);
               }}
