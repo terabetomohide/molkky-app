@@ -30,6 +30,7 @@ export type TextKeys =
   | "state"
   | "resume"
   | "lastUpdate"
+  | "saveDatetime"
   | "removeData"
   | "removeAllIfConfirm"
   | "qrCode"
@@ -68,6 +69,7 @@ export const text: { [key in TextKeys]: string } = {
   state: "ステータス",
   resume: "このゲームを再開する",
   lastUpdate: "最終更新日時",
+  saveDatetime: "保存日時",
   removeData: "データ削除",
   removeAllIfConfirm: "保存されたデータを全て削除します。",
   qrCode: "QRコード",

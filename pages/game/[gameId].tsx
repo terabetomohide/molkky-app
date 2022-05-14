@@ -6,7 +6,7 @@ import { sortBy, isEqual } from "lodash";
 import absoluteUrl from "next-absolute-url";
 import { token } from "utils/token";
 import { t } from "utils/text";
-import { getCurrentGame, setCurrentGame } from "utils/storage";
+import { getCurrentGame, setArchive, setCurrentGame } from "utils/storage";
 import Before from "components/Before";
 import Playing from "components/Playing";
 import Finished from "components/Finished";
@@ -286,7 +286,13 @@ export default function GameComponent({ host }: gameIdPageProps) {
               cancelLabel={t("undo")}
               submitLabel={t("finishOnThisResult")}
               onSubmit={() => {
-                setGame({ ...game, state: "finished" });
+                const finishedGame: Game = {
+                  ...game,
+                  players: sortBy([...players], "point").reverse(),
+                  state: "finished",
+                };
+                setArchive(game.id, finishedGame);
+                setGame(finishedGame);
                 setConfirmIndex(null);
               }}
               onCancel={() => {

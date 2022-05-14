@@ -5,10 +5,11 @@ const rootStorageKey = "molkky-app";
 
 export const resetData: () => void = () => {
   localStorage.clear();
+  sessionStorage.clear();
 };
 
 export const getAllGames: () => Storage | null = () => {
-  const data = localStorage.getItem(rootStorageKey);
+  const data = sessionStorage.getItem(rootStorageKey);
   return !!data ? (JSON.parse(data) as Storage) : null;
 };
 
@@ -47,7 +48,7 @@ export const setCurrentGame: (
     datetime: new Date().getTime(),
     game,
   };
-  localStorage.setItem(rootStorageKey, JSON.stringify(newStorage));
+  sessionStorage.setItem(rootStorageKey, JSON.stringify(newStorage));
 
   return fetch(`${api}/game/${id}`, {
     method: "POST",
@@ -59,4 +60,24 @@ export const setCurrentGame: (
       game,
     }),
   });
+};
+
+export const getArchive: () => Storage | null = () => {
+  const data = localStorage.getItem(rootStorageKey);
+  return !!data ? (JSON.parse(data) as Storage) : null;
+};
+
+export const setArchive: (id: string, game: Game) => void = (id, game) => {
+  const storage = getArchive();
+  let newStorage: Storage;
+  if (!storage) {
+    newStorage = {} as Storage;
+  } else {
+    newStorage = storage;
+  }
+  newStorage[id] = {
+    datetime: new Date().getTime(),
+    game,
+  };
+  localStorage.setItem(rootStorageKey, JSON.stringify(newStorage));
 };
