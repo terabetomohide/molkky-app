@@ -3,7 +3,7 @@ import Link from "next/link";
 import { sortBy } from "lodash";
 import { StorageGame } from "types";
 import { useEffect, useState } from "react";
-import { VStack, Box, Button, Stack, Text } from "@chakra-ui/react";
+import { VStack, Box, Button, Stack, Text, HStack } from "@chakra-ui/react";
 import Layout from "components/Layoout";
 import { t } from "utils/text";
 
@@ -32,8 +32,9 @@ export default function GamesComponent() {
   return (
     <Layout>
       {games.map(({ datetime, game: { players, state, id } }) => (
-        <Stack key={`${datetime}`} py={5} px={3}>
+        <Stack key={`${id}`} py={5} px={3}>
           <Box>
+            {id}
             {t("lastUpdate")}: {parseDate(datetime)}
           </Box>
           <Box>
@@ -41,8 +42,13 @@ export default function GamesComponent() {
           </Box>
           <Box>{t("players")}:</Box>
           <VStack>
-            {players.map(({ name, id }) => (
-              <Text key={`${datetime}-${id}`}>{name}</Text>
+            {players.map(({ name, id, point }) => (
+              <Box key={`${datetime}-${id}`}>
+                <HStack>
+                  <Box>{name}</Box>
+                  <Box>{point}</Box>
+                </HStack>
+              </Box>
             ))}
           </VStack>
           {state !== "finished" && (

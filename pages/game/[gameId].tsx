@@ -16,6 +16,7 @@ import SlideConfirm from "components/SlideComfirm";
 
 import { io } from "socket.io-client";
 import { api } from "config/socket";
+import { Socket } from "socket.io-client";
 
 export const maxPoint = 50;
 const reducedPoint = 25;
@@ -108,7 +109,7 @@ export default function GameComponent() {
   const [confirmIndex, setConfirmIndex] = useState<number | null>(null);
 
   const socketInitializer: () => void = async () => {
-    const socket = io(api, {
+    const socket: Socket = io(api, {
       withCredentials: true,
       forceNew: true,
     });
@@ -161,7 +162,7 @@ export default function GameComponent() {
     if (!game?.histories || !game?.players?.length) return;
     setLoading(true);
     setConfirmIndex(null);
-    setCurrentGame(String(gameId), game, userId).finally(() => {
+    setCurrentGame(game.id, game, userId).finally(() => {
       setTimeout(() => setLoading(false), 100);
     });
 
@@ -182,16 +183,30 @@ export default function GameComponent() {
   useEffect(() => {
     if (!game?.state || !game?.players.length) return;
     setLoading(true);
-    setCurrentGame(String(game.id), game, userId).finally(() =>
-      setTimeout(() => setLoading(false), 100)
-    );
-    if (gameId !== game.id) {
-      router.push(`/game/${game.id}`);
-    }
+    setCurrentGame(game.id, game, userId).finally(() => {
+      setTimeout(() => setLoading(false), 100);
+      if (gameId !== game.id) {
+        router.push(`/game/${game.id}`);
+      }
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [game?.state]);
 
-  useEffect(() => {}, [game?.players]);
+  useEffect(() => {
+    if (!game?.nextGameId) return;
+    if (gameId !== game.nextGameId) {
+      setLoading(true);
+      setCurrentGame(
+        game.nextGameId,
+        { ...game, nextGameId: undefined },
+        userId
+      ).finally(() => {
+        setTimeout(() => {}, 100);
+        router.push(`/game/${game?.nextGameId}`);
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [game?.nextGameId]);
 
   if (!game) {
     return <Loading />;
@@ -297,7 +312,7 @@ export default function GameComponent() {
                   const newId = token();
                   setGame({
                     ...game,
-                    id: newId,
+                    nextGameId: newId,
                     state: "before",
                     currentPlayerIndex: 0,
                     players: initPlayers(players),

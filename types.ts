@@ -6,6 +6,7 @@ export type Game = {
   state: GameState;
   players: Players;
   histories: Histories;
+  nextGameId?: string;
 };
 
 export type Games = Game[];
