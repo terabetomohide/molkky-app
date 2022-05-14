@@ -1,6 +1,7 @@
 export type TextKeys =
   | "ok"
   | "cancel"
+  | "close"
   | "appName"
   | "molkky"
   | "app"
@@ -30,11 +31,14 @@ export type TextKeys =
   | "resume"
   | "lastUpdate"
   | "removeData"
-  | "removeAllIfConfirm";
+  | "removeAllIfConfirm"
+  | "qrCode"
+  | "currentPagesQrCode";
 
 export const text: { [key in TextKeys]: string } = {
   ok: "OK",
   cancel: "キャンセル",
+  close: "閉じる",
   appName: "モルック スコアリングアプリ",
   molkky: "モルック",
   app: "アプリ",
@@ -65,6 +69,8 @@ export const text: { [key in TextKeys]: string } = {
   lastUpdate: "最終更新日時",
   removeData: "データ削除",
   removeAllIfConfirm: "保存されたデータを全て削除します。",
+  qrCode: "QRコード",
+  currentPagesQrCode: "このゲームのQRコード",
 } as const;
 
 export function t(key: TextKeys): string {

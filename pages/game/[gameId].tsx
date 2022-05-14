@@ -1,3 +1,4 @@
+import type { GetServerSideProps } from "next";
 import React, { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Game, Player, Players } from "types";
@@ -101,7 +102,9 @@ function removePlayer(players: Players, removeId: Player["id"]): Players {
   return arr;
 }
 
-export default function GameComponent() {
+type gameIdPageProps = { host?: string };
+
+export default function GameComponent({ host }: gameIdPageProps) {
   const router = useRouter();
   const { gameId } = router.query;
   const [game, setGame] = useState<Game>();
@@ -209,7 +212,11 @@ export default function GameComponent() {
   }, [game?.nextGameId]);
 
   if (!game) {
-    return <Loading />;
+    return (
+      <Layout host={host}>
+        <Loading />
+      </Layout>
+    );
   }
 
   const undoHandler = () => {
@@ -327,5 +334,9 @@ export default function GameComponent() {
         );
     }
   };
-  return <Layout>{content()}</Layout>;
+  return <Layout host={host}>{content()}</Layout>;
 }
+
+export const getServerSideProps: GetServerSideProps<gameIdPageProps> = async (
+  context
+) => ({ props: { host: context.req.headers.host || undefined } });
