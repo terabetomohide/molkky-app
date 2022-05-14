@@ -3,6 +3,7 @@ import React, { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Game, Player, Players } from "types";
 import { sortBy, isEqual } from "lodash";
+import absoluteUrl from "next-absolute-url";
 import { token } from "utils/token";
 import { t } from "utils/text";
 import { getCurrentGame, setCurrentGame } from "utils/storage";
@@ -339,4 +340,7 @@ export default function GameComponent({ host }: gameIdPageProps) {
 
 export const getServerSideProps: GetServerSideProps<gameIdPageProps> = async (
   context
-) => ({ props: { host: context.req.headers.host || undefined } });
+) => {
+  const { origin } = absoluteUrl(context.req);
+  return { props: { host: origin || undefined } };
+};
