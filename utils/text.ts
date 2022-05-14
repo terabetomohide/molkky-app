@@ -33,7 +33,8 @@ export type TextKeys =
   | "removeData"
   | "removeAllIfConfirm"
   | "qrCode"
-  | "currentPagesQrCode";
+  | "currentPagesQrCode"
+  | "loading";
 
 export const text: { [key in TextKeys]: string } = {
   ok: "OK",
@@ -71,6 +72,7 @@ export const text: { [key in TextKeys]: string } = {
   removeAllIfConfirm: "保存されたデータを全て削除します。",
   qrCode: "QRコード",
   currentPagesQrCode: "このゲームのQRコード",
+  loading: "読み込み中",
 } as const;
 
 export function t(key: TextKeys): string {
