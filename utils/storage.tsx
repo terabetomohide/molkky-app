@@ -12,6 +12,12 @@ export const getAllGames: () => Storage | null = () => {
   return !!data ? (JSON.parse(data) as Storage) : null;
 };
 
+export const wakeUpApi: () => void = () => {
+  return fetch(`${api}/`).catch(() => {
+    return;
+  });
+};
+
 export const getCurrentGame: (gameId: string) => Promise<Game> = (gameId) => {
   const storage: Storage = getAllGames() || {};
   return fetch(`${api}/game/${gameId}`, {

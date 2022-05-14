@@ -4,6 +4,7 @@ import Link from "next/link";
 import { token } from "utils/token";
 import { t } from "utils/text";
 import { resetData } from "utils/storage";
+import { wakeUpApi } from "utils/storage";
 import {
   VStack,
   Box,
@@ -12,6 +13,7 @@ import {
   Button,
   Flex,
 } from "@chakra-ui/react";
+import { useEffect } from "react";
 
 const MenuButton = ({ label, path }: { label: string; path: string }) => (
   <Link href={path} passHref>
@@ -30,6 +32,11 @@ const MenuButton = ({ label, path }: { label: string; path: string }) => (
 );
 
 export default function Home() {
+  useEffect(() => {
+    // herokuに先行してアクセスしてスリープ解除を早める
+    wakeUpApi();
+  }, []);
+
   return (
     <div className="container">
       <Head>
