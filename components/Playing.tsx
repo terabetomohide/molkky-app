@@ -1,6 +1,7 @@
 import { Players, Player, Histories } from "types";
 import { HStack, Stack, Box } from "@chakra-ui/react";
 import { t } from "utils/text";
+import { maxFails } from "pages/game/[gameId]";
 
 export default function Playing({
   players,
@@ -35,7 +36,12 @@ export default function Playing({
       <Stack spacing={0}>
         {!!players.length &&
           players.map(({ name, id, point, fails }: Player, playerIndex) => (
-            <Box key={id} bg={bgColor(playerIndex)} p={3}>
+            <Box
+              key={id}
+              bg={bgColor(playerIndex)}
+              opacity={fails === maxFails ? 0.5 : 1}
+              p={3}
+            >
               <Stack>
                 <HStack justifyContent={"space-between"}>
                   <Box fontWeight={600} fontSize={22}>

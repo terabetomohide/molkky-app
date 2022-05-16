@@ -1,9 +1,8 @@
 import { getArchive } from "utils/storage";
-import Link from "next/link";
 import { sortBy } from "lodash";
 import { StorageGame } from "types";
 import { useEffect, useState } from "react";
-import { VStack, Box, Button, Stack, Text, HStack } from "@chakra-ui/react";
+import { Box, Stack } from "@chakra-ui/react";
 import Layout from "components/Layoout";
 import Finished from "components/Finished";
 import { t } from "utils/text";
@@ -37,10 +36,7 @@ export default function GamesComponent() {
           <Box>
             {t("saveDatetime")}: {parseDate(datetime)}
           </Box>
-          <Finished
-            players={sortBy([...players], "point").reverse()}
-            histories={histories}
-          />
+          <Finished players={players} histories={histories} />
         </Stack>
       ))}
     </Layout>

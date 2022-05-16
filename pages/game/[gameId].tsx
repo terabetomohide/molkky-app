@@ -22,7 +22,7 @@ import { Socket } from "socket.io-client";
 
 export const maxPoint = 50;
 const reducedPoint = 25;
-const maxFails = 3;
+export const maxFails = 3;
 const userId = token();
 
 function undoHistory(game: Game): Game | undefined {
@@ -77,6 +77,14 @@ function addPoint(game: Game, add: number): Game {
   let nextPlayerIndex = game.currentPlayerIndex + 1;
   if (nextPlayerIndex === currentPlayers.length) {
     nextPlayerIndex = 0;
+  }
+
+  // fails === maxFailsのプレイヤーをスキップ
+  while (currentPlayers[nextPlayerIndex].fails === maxFails) {
+    nextPlayerIndex = nextPlayerIndex + 1;
+    if (nextPlayerIndex === currentPlayers.length) {
+      nextPlayerIndex = 0;
+    }
   }
 
   currentPlayers.splice(game.currentPlayerIndex, 1, currentPlayer);
@@ -172,8 +180,10 @@ export default function GameComponent({ host }: gameIdPageProps) {
 
     if (game?.state === "playing") {
       const winner = game.players.find((player) => player.point === maxPoint);
-      const fail = game.players.find((player) => player.fails === maxFails);
-      if (winner || fail) {
+      const activePlayers = game.players.filter(
+        (player) => player.fails !== maxFails
+      );
+      if (winner || activePlayers.length === 1) {
         let preIndex = game.currentPlayerIndex - 1;
         if (preIndex < 0) {
           preIndex = game.players.length - 1;
@@ -288,7 +298,6 @@ export default function GameComponent({ host }: gameIdPageProps) {
               onSubmit={() => {
                 const finishedGame: Game = {
                   ...game,
-                  players: sortBy([...players], "point").reverse(),
                   state: "finished",
                 };
                 setArchive(token(), finishedGame);
@@ -316,10 +325,7 @@ export default function GameComponent({ host }: gameIdPageProps) {
       case "finished":
         return (
           <div>
-            <Finished
-              players={sortBy([...players], "point").reverse()}
-              histories={histories}
-            />
+            <Finished players={players} histories={histories} />
             <VStack m={3}>
               <Button
                 onClick={() => {
